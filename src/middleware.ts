@@ -2,6 +2,20 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  // Static assets (manifest, service worker, icons, future Digital Asset
+  // Links file for the Android app, etc.) must be reachable with NO auth
+  // check at all — crawlers like PWABuilder, and Android's app-link
+  // verifier, fetch these with no session cookie whatsoever. Skip the
+  // auth logic entirely for anything that looks like a static file.
+  const isStaticAsset =
+    /\.(json|js|ico|png|jpg|jpeg|svg|webp|txt|xml|webmanifest)$/.test(
+      request.nextUrl.pathname
+    ) || request.nextUrl.pathname.startsWith("/.well-known");
+
+  if (isStaticAsset) {
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
