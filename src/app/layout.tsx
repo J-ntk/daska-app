@@ -7,17 +7,17 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
 
 export const metadata: Metadata = {
-  title: "Planning App",
+  title: "Daska",
   description: "Daily, weekly, monthly and yearly planning with team projects",
   manifest: "/manifest.json",
   icons: {
-    icon: "/app-icon.jpg",
-    apple: "/app-icon.jpg",
+    icon: "/app-icon.png",
+    apple: "/app-icon.png",
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Planning App",
+    title: "Daska",
   },
 };
 

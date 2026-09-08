@@ -23,8 +23,8 @@ export default function AppShell({
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 inset-x-0 z-30 flex items-center justify-between border-b border-line bg-surface/90 backdrop-blur px-4 h-14">
         <div className="flex items-center gap-2">
-          <Image src="/app-icon.jpg" alt="" width={24} height={24} className="rounded-md" />
-          <span className="font-display font-semibold text-sm">Planning App</span>
+          <Image src="/app-icon.png" alt="" width={24} height={24} className="rounded-md" />
+          <span className="font-display font-semibold text-sm">Daska</span>
         </div>
         <button
           onClick={() => setOpen(true)}
