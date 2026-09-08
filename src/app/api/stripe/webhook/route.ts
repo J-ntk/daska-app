@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Stripe from "stripe";
 
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, signature!, process.env.STRIPE_WEBHOOK_SECRET!);
+    event = getStripe().webhooks.constructEvent(body, signature!, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
@@ -35,8 +35,6 @@ export async function POST(request: NextRequest) {
         })
         .eq("id", userId);
 
-      // Reward whoever referred this user (if anyone, and they're not the
-      // founder — founder-referred users are already free, nothing to reward)
       const { data: referredProfile } = await admin
         .from("profiles")
         .select("referred_by")
@@ -57,12 +55,9 @@ export async function POST(request: NextRequest) {
               .update({ has_referral_discount: true })
               .eq("id", referrer.id);
           }
-          // If the referrer already has an active subscription, apply the
-          // discount going forward immediately. If not, has_referral_discount
-          // will apply it automatically the next time they check out.
           if (referrer.stripe_subscription_id && process.env.STRIPE_COUPON_REFERRAL) {
             try {
-              await stripe.subscriptions.update(referrer.stripe_subscription_id, {
+              await getStripe().subscriptions.update(referrer.stripe_subscription_id, {
                 discounts: [{ coupon: process.env.STRIPE_COUPON_REFERRAL }],
               });
             } catch {
@@ -79,8 +74,6 @@ export async function POST(request: NextRequest) {
     const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
     const status = event.type === "customer.subscription.deleted" ? "canceled" : sub.status;
 
-    // Newer Stripe API versions moved the billing period onto each
-    // subscription item rather than the subscription itself.
     const periodEndUnix =
       (sub as any).current_period_end ?? sub.items.data[0]?.current_period_end;
 

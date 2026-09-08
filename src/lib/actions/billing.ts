@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { redirect } from "next/navigation";
 
 const PRICE_IDS: Record<string, string> = {
@@ -25,7 +25,7 @@ export async function startCheckout(planType: "monthly" | "yearly" | "lifetime")
 
   let customerId = profile?.stripe_customer_id as string | null;
   if (!customerId) {
-    const customer = await stripe.customers.create({
+    const customer = await getStripe().customers.create({
       email: user.email ?? undefined,
       metadata: { user_id: user.id },
     });
@@ -37,7 +37,7 @@ export async function startCheckout(planType: "monthly" | "yearly" | "lifetime")
   const isSubscription = planType !== "lifetime";
   const couponId = process.env.STRIPE_COUPON_REFERRAL;
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     customer: customerId,
     mode: isSubscription ? "subscription" : "payment",
     line_items: [{ price: PRICE_IDS[planType], quantity: 1 }],
@@ -67,7 +67,7 @@ export async function openBillingPortal() {
   if (!profile?.stripe_customer_id) throw new Error("No billing account yet");
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const session = await stripe.billingPortal.sessions.create({
+  const session = await getStripe().billingPortal.sessions.create({
     customer: profile.stripe_customer_id,
     return_url: `${appUrl}/app/billing`,
   });
