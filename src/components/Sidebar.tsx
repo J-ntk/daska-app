@@ -43,7 +43,7 @@ export default function Sidebar({
     <aside className="w-64 md:w-56 shrink-0 border-r border-line bg-surface h-full md:min-h-screen p-4 flex flex-col overflow-visible shadow-2xl md:shadow-none">
       <div className="flex items-center justify-between mb-6 pb-3 border-b border-line">
         <div className="flex items-center gap-2">
-          <Image src="/app-icon.png" alt="" width={26} height={26} className="rounded-md shrink-0" />
+          <Image src="/icons/icon-192.png" alt="" width={26} height={26} className="rounded-md shrink-0" />
           <span className="font-display font-semibold text-sm">Daska</span>
         </div>
         {onClose && (

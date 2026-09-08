@@ -1,15 +1,51 @@
 {
+  "id": "/",
   "name": "Daska",
   "short_name": "Daska",
   "description": "Daily, weekly, monthly and yearly planning with team projects",
   "start_url": "/app/daily",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone"],
+  "orientation": "portrait",
   "background_color": "#0A0E1A",
   "theme_color": "#0A0E1A",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["productivity", "business"],
   "icons": [
-    { "src": "/app-icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Today",
+      "short_name": "Today",
+      "url": "/app/daily",
+      "description": "Jump to today's tasks"
+    },
+    {
+      "name": "New Project",
+      "short_name": "New Project",
+      "url": "/app/new-project",
+      "description": "Start a new project"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-2.jpg",
+      "sizes": "1080x2199",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Daily view"
+    },
+    {
+      "src": "/screenshots/mobile-1.jpg",
+      "sizes": "1080x2199",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Navigation menu"
+    }
   ]
 }
