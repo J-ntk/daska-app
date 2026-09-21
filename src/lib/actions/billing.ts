@@ -10,7 +10,14 @@ const PRICE_IDS: Record<string, string> = {
   lifetime: process.env.STRIPE_PRICE_LIFETIME ?? "",
 };
 
-export async function startCheckout(planType: "monthly" | "yearly" | "lifetime") {
+export async function startCheckout(
+  planType: "monthly" | "yearly" | "lifetime",
+  locale: string
+) {
+  if (!process.env.STRIPE_SECRET_KEY || !PRICE_IDS[planType]) {
+    redirect(`/${locale}/app/billing?error=not_configured`);
+  }
+
   const supabase = createClient();
   const {
     data: { user },
@@ -42,8 +49,8 @@ export async function startCheckout(planType: "monthly" | "yearly" | "lifetime")
     mode: isSubscription ? "subscription" : "payment",
     line_items: [{ price: PRICE_IDS[planType], quantity: 1 }],
     discounts: profile?.has_referral_discount && couponId ? [{ coupon: couponId }] : undefined,
-    success_url: `${appUrl}/app/billing?success=1`,
-    cancel_url: `${appUrl}/app/billing?canceled=1`,
+    success_url: `${appUrl}/${locale}/app/billing?success=1`,
+    cancel_url: `${appUrl}/${locale}/app/billing?canceled=1`,
     metadata: { user_id: user.id, plan_type: planType },
   });
 
@@ -51,7 +58,7 @@ export async function startCheckout(planType: "monthly" | "yearly" | "lifetime")
   redirect(session.url);
 }
 
-export async function openBillingPortal() {
+export async function openBillingPortal(locale: string) {
   const supabase = createClient();
   const {
     data: { user },
@@ -69,7 +76,7 @@ export async function openBillingPortal() {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const session = await getStripe().billingPortal.sessions.create({
     customer: profile.stripe_customer_id,
-    return_url: `${appUrl}/app/billing`,
+    return_url: `${appUrl}/${locale}/app/billing`,
   });
 
   redirect(session.url);
