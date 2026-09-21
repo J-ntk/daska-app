@@ -74,8 +74,12 @@ export async function POST(request: NextRequest) {
     const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
     const status = event.type === "customer.subscription.deleted" ? "canceled" : sub.status;
 
-    const periodEndUnix =
-      (sub as any).current_period_end ?? sub.items.data[0]?.current_period_end;
+    // Stripe's SDK types for this field have shifted across versions
+    // (top-level vs per-item billing period). Cast past it rather than
+    // chase the exact type each time the installed package updates.
+    const subAny = sub as any;
+    const periodEndUnix: number | undefined =
+      subAny.current_period_end ?? subAny.items?.data?.[0]?.current_period_end;
 
     await admin
       .from("profiles")
