@@ -23,9 +23,6 @@ export default async function BillingPage({
 
   const isFounder = profile?.is_founder === true;
 
-  // Was this user invited to a project owned by the founder? If so, they
-  // get full free access forever too — figure out who granted it, for a
-  // warmer message than generic billing UI.
   let grantedByName: string | null = null;
   if (!isFounder) {
     const { data: memberships } = await supabase
@@ -61,13 +58,33 @@ export default async function BillingPage({
 
   const hasFreeForeverAccess = isFounder || grantedByName !== null;
 
-  if (hasFreeForeverAccess) {
-    return (
-      <div className="max-w-md">
-        <h1 className="text-2xl font-display font-semibold mb-6 border-b border-line pb-4">
-          Billing
-        </h1>
-        <div className="border border-accent/30 rounded-lg p-6 bg-gradient-to-b from-accent/10 to-transparent">
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const referralLink = `${appUrl}/${locale}/signup?ref=${profile?.referral_code ?? ""}`;
+
+  let ownedProjectsCount = 0;
+  let stripeConfigured = false;
+  if (!hasFreeForeverAccess) {
+    const { count } = await supabase
+      .from("projects")
+      .select("id", { count: "exact", head: true })
+      .eq("owner_id", user.id);
+    ownedProjectsCount = count ?? 0;
+
+    stripeConfigured = !!(
+      process.env.STRIPE_PRICE_MONTHLY &&
+      process.env.STRIPE_PRICE_YEARLY &&
+      process.env.STRIPE_PRICE_LIFETIME
+    );
+  }
+
+  return (
+    <div className="max-w-md">
+      <h1 className="text-2xl font-display font-semibold mb-6 border-b border-line pb-4">
+        Billing
+      </h1>
+
+      {hasFreeForeverAccess ? (
+        <div className="border border-accent/30 rounded-lg p-6 bg-gradient-to-b from-accent/10 to-transparent mb-6">
           {isFounder ? (
             <>
               <div className="text-lg font-display font-semibold mb-2">This is your app 💙</div>
@@ -87,93 +104,73 @@ export default async function BillingPage({
             </>
           )}
         </div>
-      </div>
-    );
-  }
-
-  const { count: ownedProjects } = await supabase
-    .from("projects")
-    .select("id", { count: "exact", head: true })
-    .eq("owner_id", user.id);
-
-  const stripeConfigured = !!(
-    process.env.STRIPE_PRICE_MONTHLY &&
-    process.env.STRIPE_PRICE_YEARLY &&
-    process.env.STRIPE_PRICE_LIFETIME
-  );
-
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const referralLink = `${appUrl}/signup?ref=${profile?.referral_code ?? ""}`;
-
-  return (
-    <div className="max-w-md">
-      <h1 className="text-2xl font-display font-semibold mb-6 border-b border-line pb-4">
-        Billing
-      </h1>
-
-      {searchParams.success && (
-        <div className="mb-4 text-sm text-green-300 bg-green-500/10 border border-green-500/30 rounded-lg px-3 py-2">
-          Payment successful — welcome to Pro.
-        </div>
-      )}
-      {searchParams.canceled && (
-        <div className="mb-4 text-sm text-ink/60 bg-surface border border-line rounded-lg px-3 py-2">
-          Checkout canceled — no charge was made.
-        </div>
-      )}
-      {searchParams.error === "not_configured" && (
-        <div className="mb-4 text-sm text-ink/60 bg-surface border border-line rounded-lg px-3 py-2">
-          Billing isn&apos;t set up yet — check back soon.
-        </div>
-      )}
-
-      <div className="mb-3 text-xs font-medium uppercase text-ink/40">Current plan</div>
-      <div className="border border-line rounded-lg p-4 bg-surface mb-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <div className="text-sm font-medium capitalize">{profile?.plan ?? "free"}</div>
-            <div className="text-xs text-ink/50">
-              {profile?.plan === "free"
-                ? `${ownedProjects ?? 0}/1 free project used`
-                : "Unlimited projects"}
-            </div>
-            {profile?.has_referral_discount && (
-              <div className="text-xs text-accentLight mt-1">20% referral discount active</div>
-            )}
-          </div>
-          {profile?.stripe_customer_id && profile.plan !== "free" && (
-            <form action={openBillingPortal.bind(null, locale)}>
-              <button className="text-xs border border-line rounded-lg px-3 py-1.5 hover:border-accent transition-colors">
-                Manage
-              </button>
-            </form>
-          )}
-        </div>
-      </div>
-
-      {profile?.plan === "free" && (
+      ) : (
         <>
-          <div className="mb-3 text-xs font-medium uppercase text-ink/40">Upgrade</div>
-          {stripeConfigured ? (
-            <div className="grid grid-cols-1 gap-3 mb-6">
-              <PlanCard title="Monthly" price="$7/mo" action={startCheckout.bind(null, "monthly", locale)} />
-              <PlanCard
-                title="Yearly"
-                price="$60/yr"
-                subtitle="2 months free"
-                action={startCheckout.bind(null, "yearly", locale)}
-              />
-              <PlanCard
-                title="Lifetime"
-                price="$149 once"
-                subtitle="Pay once, use forever"
-                action={startCheckout.bind(null, "lifetime", locale)}
-              />
+          {searchParams.success && (
+            <div className="mb-4 text-sm text-green-300 bg-green-500/10 border border-green-500/30 rounded-lg px-3 py-2">
+              Payment successful — welcome to Pro.
             </div>
-          ) : (
-            <div className="border border-line rounded-lg p-4 bg-surface mb-6 text-sm text-ink/50">
+          )}
+          {searchParams.canceled && (
+            <div className="mb-4 text-sm text-ink/60 bg-surface border border-line rounded-lg px-3 py-2">
+              Checkout canceled — no charge was made.
+            </div>
+          )}
+          {searchParams.error === "not_configured" && (
+            <div className="mb-4 text-sm text-ink/60 bg-surface border border-line rounded-lg px-3 py-2">
               Billing isn&apos;t set up yet — check back soon.
             </div>
+          )}
+
+          <div className="mb-3 text-xs font-medium uppercase text-ink/40">Current plan</div>
+          <div className="border border-line rounded-lg p-4 bg-surface mb-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <div className="text-sm font-medium capitalize">{profile?.plan ?? "free"}</div>
+                <div className="text-xs text-ink/50">
+                  {profile?.plan === "free"
+                    ? `${ownedProjectsCount}/1 free project used`
+                    : "Unlimited projects"}
+                </div>
+                {profile?.has_referral_discount && (
+                  <div className="text-xs text-accentLight mt-1">20% referral discount active</div>
+                )}
+              </div>
+              {profile?.stripe_customer_id && profile.plan !== "free" && (
+                <form action={openBillingPortal.bind(null, locale)}>
+                  <button className="text-xs border border-line rounded-lg px-3 py-1.5 hover:border-accent transition-colors">
+                    Manage
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+
+          {profile?.plan === "free" && (
+            <>
+              <div className="mb-3 text-xs font-medium uppercase text-ink/40">Upgrade</div>
+              {stripeConfigured ? (
+                <div className="grid grid-cols-1 gap-3 mb-6">
+                  <PlanCard title="Monthly" price="$7/mo" action={startCheckout.bind(null, "monthly", locale)} />
+                  <PlanCard
+                    title="Yearly"
+                    price="$60/yr"
+                    subtitle="2 months free"
+                    action={startCheckout.bind(null, "yearly", locale)}
+                  />
+                  <PlanCard
+                    title="Lifetime"
+                    price="$149 once"
+                    subtitle="Pay once, use forever"
+                    action={startCheckout.bind(null, "lifetime", locale)}
+                  />
+                </div>
+              ) : (
+                <div className="border border-line rounded-lg p-4 bg-surface mb-6 text-sm text-ink/50">
+                  Billing isn&apos;t set up yet — check back soon.
+                </div>
+              )}
+            </>
           )}
         </>
       )}
