@@ -23,6 +23,9 @@ export default async function BillingPage({
 
   const isFounder = profile?.is_founder === true;
 
+  // Free-forever access for anyone who is an ACTIVE member of a project owned
+  // by a founder. Pending invites don't count until they're accepted.
+  let grantedByFounder = false;
   let grantedByName: string | null = null;
   if (!isFounder) {
     const { data: memberships } = await supabase
@@ -50,13 +53,16 @@ export default async function BillingPage({
           .limit(1);
 
         if (owners && owners.length > 0) {
+          // Track "granted by a founder" separately from the name, so a founder
+          // without a full_name set still grants access.
+          grantedByFounder = true;
           grantedByName = owners[0].full_name;
         }
       }
     }
   }
 
-  const hasFreeForeverAccess = isFounder || grantedByName !== null;
+  const hasFreeForeverAccess = isFounder || grantedByFounder;
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const referralLink = `${appUrl}/${locale}/signup?ref=${profile?.referral_code ?? ""}`;
