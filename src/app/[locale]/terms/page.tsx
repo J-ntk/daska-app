@@ -27,18 +27,41 @@ export default function TermsPage() {
             <p>
               The free plan includes one owned project; paid plans (Monthly, Yearly, or Lifetime)
               unlock unlimited projects. Being invited to someone else&apos;s project is always
-              free, regardless of your own plan. Subscriptions renew automatically until
-              cancelled; you can manage or cancel your subscription anytime from Billing, which
-              opens Stripe&apos;s secure customer portal.
+              free, regardless of your own plan. Monthly and Yearly subscriptions renew
+              automatically until cancelled; the Lifetime plan is a one-time payment with no
+              recurring charge. You can manage or cancel your subscription anytime from Billing,
+              which opens Stripe&apos;s secure customer portal.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-ink mb-2">Cancelling</h2>
+            <p>
+              Cancelling a Monthly or Yearly subscription stops future renewals. You keep access
+              to paid features until the end of the period you&apos;ve already paid for, after
+              which your account reverts to the free plan. Cancelling doesn&apos;t delete your
+              projects or tasks.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-ink mb-2">Refunds</h2>
+            <p>
+              Refunds aren&apos;t automatic, but we&apos;ll look at requests case by case,
+              particularly for accidental or duplicate charges. Contact us using the details
+              below and we&apos;ll get back to you.
             </p>
           </section>
 
           <section>
             <h2 className="text-base font-semibold text-ink mb-2">Referrals</h2>
             <p>
-              Referral discounts apply when a referred user completes a paid subscription, and
-              remain active for as long as that subscription continues. Referral rewards may be
-              adjusted or discontinued for abuse (e.g. self-referral, fake accounts).
+              Signing up through another user&apos;s referral link earns you a coupon worth 20%
+              off your first payment on the Monthly or Yearly plan. Each time someone you&apos;ve
+              referred completes their first paid subscription, you earn another 20%-off coupon
+              for your own next payment. Coupons apply automatically, one per payment, don&apos;t
+              expire, and don&apos;t apply to the Lifetime plan. Referral rewards may be adjusted
+              or withheld in cases of abuse (e.g. self-referral, fake accounts).
             </p>
           </section>
 
@@ -65,6 +88,17 @@ export default function TermsPage() {
             <p>
               We may update these terms as the app evolves. Continued use after changes means you
               accept the updated terms.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-base font-semibold text-ink mb-2">Contact</h2>
+            <p>
+              Questions about billing, refunds, or anything else — email us at{" "}
+              <a href="mailto:support@daska.site" className="text-accentLight underline">
+                support@daska.site
+              </a>
+              .
             </p>
           </section>
         </div>

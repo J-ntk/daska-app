@@ -1,6 +1,8 @@
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { startCheckout, openBillingPortal } from "@/lib/actions/billing";
 import CopyReferralLink from "@/components/CopyReferralLink";
+import { getBillingCurrency, PLAN_PRICES } from "@/lib/currency";
 
 export default async function BillingPage({
   params: { locale },
@@ -22,6 +24,14 @@ export default async function BillingPage({
     .single();
 
   const isFounder = profile?.is_founder === true;
+
+  // Referral coupons: 20% off one payment, earned by inviting friends who buy.
+  const { data: credits } = await supabase
+    .from("referral_credits")
+    .select("kind, used_at")
+    .eq("user_id", user.id);
+  const couponsAvailable = (credits ?? []).filter((c: any) => !c.used_at).length;
+  const friendsSubscribed = (credits ?? []).filter((c: any) => c.kind === "friend").length;
 
   // Free-forever access for anyone who is an ACTIVE member of a project owned
   // by a founder. Pending invites don't count until they're accepted.
@@ -63,6 +73,10 @@ export default async function BillingPage({
   }
 
   const hasFreeForeverAccess = isFounder || grantedByFounder;
+
+  // Show (and charge) in EUR or USD depending on the visitor's country.
+  const currency = getBillingCurrency(headers().get("x-vercel-ip-country"));
+  const prices = PLAN_PRICES[currency];
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const referralLink = `${appUrl}/${locale}/signup?ref=${profile?.referral_code ?? ""}`;
@@ -138,8 +152,11 @@ export default async function BillingPage({
                     ? `${ownedProjectsCount}/1 free project used`
                     : "Unlimited projects"}
                 </div>
-                {profile?.has_referral_discount && (
-                  <div className="text-xs text-accentLight mt-1">20% referral discount active</div>
+                {couponsAvailable > 0 && profile?.plan !== "lifetime" && (
+                  <div className="text-xs text-accentLight mt-1">
+                    {couponsAvailable} referral {couponsAvailable === 1 ? "coupon" : "coupons"} ready
+                    — 20% off your next payment
+                  </div>
                 )}
               </div>
               {profile?.stripe_customer_id && profile.plan !== "free" && (
@@ -157,18 +174,23 @@ export default async function BillingPage({
               <div className="mb-3 text-xs font-medium uppercase text-ink/40">Upgrade</div>
               {stripeConfigured ? (
                 <div className="grid grid-cols-1 gap-3 mb-6">
-                  <PlanCard title="Monthly" price="$7/mo" action={startCheckout.bind(null, "monthly", locale)} />
+                  <PlanCard
+                    title="Monthly"
+                    price={prices.monthly}
+                    subtitle={couponsAvailable > 0 ? "20% coupon applied at checkout" : undefined}
+                    action={startCheckout.bind(null, "monthly", locale, currency)}
+                  />
                   <PlanCard
                     title="Yearly"
-                    price="$60/yr"
-                    subtitle="2 months free"
-                    action={startCheckout.bind(null, "yearly", locale)}
+                    price={prices.yearly}
+                    subtitle={couponsAvailable > 0 ? "Save over 25% + 20% coupon" : "Save over 25%"}
+                    action={startCheckout.bind(null, "yearly", locale, currency)}
                   />
                   <PlanCard
                     title="Lifetime"
-                    price="$149 once"
+                    price={prices.lifetime}
                     subtitle="Pay once, use forever"
-                    action={startCheckout.bind(null, "lifetime", locale)}
+                    action={startCheckout.bind(null, "lifetime", locale, currency)}
                   />
                 </div>
               ) : (
@@ -184,9 +206,16 @@ export default async function BillingPage({
       <div className="mb-3 text-xs font-medium uppercase text-ink/40">Your referral link</div>
       <div className="border border-line rounded-lg p-4 bg-surface">
         <p className="text-xs text-ink/50 mb-3">
-          Share this link. Anyone who signs up with it — and you — get 20% off, forever, the
-          moment they subscribe.
+          Share this link. You and your friend each get a 20% coupon: it takes 20% off one
+          payment, a month on the monthly plan or a year on the yearly plan. You earn another
+          coupon every time a friend subscribes. Coupons don&apos;t apply to the lifetime plan.
         </p>
+        {friendsSubscribed > 0 && (
+          <p className="text-xs text-accentLight mb-3">
+            {friendsSubscribed} {friendsSubscribed === 1 ? "friend has" : "friends have"} subscribed
+            — {couponsAvailable} {couponsAvailable === 1 ? "coupon" : "coupons"} ready.
+          </p>
+        )}
         <CopyReferralLink link={referralLink} />
       </div>
     </div>

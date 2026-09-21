@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe";
 import { redirect } from "next/navigation";
+import type { BillingCurrency } from "@/lib/currency";
+import { getReferralCouponId } from "@/lib/referral";
 
 const PRICE_IDS: Record<string, string> = {
   monthly: process.env.STRIPE_PRICE_MONTHLY ?? "",
@@ -12,7 +14,8 @@ const PRICE_IDS: Record<string, string> = {
 
 export async function startCheckout(
   planType: "monthly" | "yearly" | "lifetime",
-  locale: string
+  locale: string,
+  currency: BillingCurrency = "eur"
 ) {
   // Guard first, before touching Stripe or Supabase at all — if this ever
   // gets called before Stripe is configured, fail gracefully back to the
@@ -45,16 +48,30 @@ export async function startCheckout(
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const isSubscription = planType !== "lifetime";
-  const couponId = process.env.STRIPE_COUPON_REFERRAL;
+
+  // Referral coupon: 20% off this first payment if the person has an unused
+  // coupon. Monthly and yearly only, never lifetime. It's marked as spent by
+  // the webhook once the payment goes through.
+  let couponId: string | null = null;
+  if (isSubscription) {
+    const { count: couponsAvailable } = await supabase
+      .from("referral_credits")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .is("used_at", null);
+    if ((couponsAvailable ?? 0) > 0) couponId = await getReferralCouponId();
+  }
 
   const session = await getStripe().checkout.sessions.create({
     customer: customerId,
     mode: isSubscription ? "subscription" : "payment",
     line_items: [{ price: PRICE_IDS[planType], quantity: 1 }],
-    discounts: profile?.has_referral_discount && couponId ? [{ coupon: couponId }] : undefined,
+    // Charge in the currency the billing page showed (each price has EUR and USD).
+    currency: currency === "usd" ? "usd" : "eur",
+    discounts: couponId ? [{ coupon: couponId }] : undefined,
     success_url: `${appUrl}/${locale}/app/billing?success=1`,
     cancel_url: `${appUrl}/${locale}/app/billing?canceled=1`,
-    metadata: { user_id: user.id, plan_type: planType },
+    metadata: { user_id: user.id, plan_type: planType, credit_applied: couponId ? "1" : "0" },
   });
 
   if (!session.url) throw new Error("Couldn't create checkout session");

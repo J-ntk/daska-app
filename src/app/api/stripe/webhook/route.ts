@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Stripe from "stripe";
+import { getReferralCouponId } from "@/lib/referral";
+
+// Subscription statuses that keep or give Pro, and ones that remove it.
+// Anything else (e.g. "incomplete", "paused") leaves the plan untouched.
+const GRANT_STATUSES = new Set(["active", "trialing", "past_due"]);
+const REVOKE_STATUSES = new Set(["canceled", "unpaid", "incomplete_expired"]);
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -17,15 +23,25 @@ export async function POST(request: NextRequest) {
   const admin = createAdminClient();
   if (!admin) return NextResponse.json({ error: "Server not configured" }, { status: 500 });
 
-  if (event.type === "checkout.session.completed") {
+  if (
+    event.type === "checkout.session.completed" ||
+    event.type === "checkout.session.async_payment_succeeded"
+  ) {
     const session = event.data.object as Stripe.Checkout.Session;
+
+    // Delayed payment methods (e.g. bank debits) complete the session before
+    // the money arrives. Wait for checkout.session.async_payment_succeeded.
+    if (session.payment_status === "unpaid") {
+      return NextResponse.json({ received: true });
+    }
+
     const userId = session.metadata?.user_id;
     const planType = session.metadata?.plan_type;
 
     if (userId) {
       const plan = planType === "lifetime" ? "lifetime" : "pro";
 
-      await admin
+      const { error: updateError } = await admin
         .from("profiles")
         .update({
           plan,
@@ -35,6 +51,23 @@ export async function POST(request: NextRequest) {
         })
         .eq("id", userId);
 
+      // Returning 500 makes Stripe retry the event instead of losing it.
+      if (updateError) {
+        return NextResponse.json({ error: "Database error" }, { status: 500 });
+      }
+
+      // The buyer used a referral coupon at checkout: mark it as spent.
+      if (session.metadata?.credit_applied === "1") {
+        const { error: spendError } = await admin.rpc("spend_referral_credit", {
+          p_user: userId,
+          p_ref: session.id,
+        });
+        if (spendError) {
+          return NextResponse.json({ error: "Database error" }, { status: 500 });
+        }
+      }
+
+      // First purchase by an invited friend: their inviter earns one coupon.
       const { data: referredProfile } = await admin
         .from("profiles")
         .select("referred_by")
@@ -44,24 +77,58 @@ export async function POST(request: NextRequest) {
       if (referredProfile?.referred_by) {
         const { data: referrer } = await admin
           .from("profiles")
-          .select("id, is_founder, stripe_subscription_id, has_referral_discount")
+          .select("id, is_founder")
           .eq("id", referredProfile.referred_by)
           .maybeSingle();
 
         if (referrer && !referrer.is_founder) {
-          if (!referrer.has_referral_discount) {
-            await admin
-              .from("profiles")
-              .update({ has_referral_discount: true })
-              .eq("id", referrer.id);
+          // friend_id is unique, so a retried event or a later purchase by the
+          // same friend hits a duplicate (23505) and earns nothing extra.
+          const { error: creditError } = await admin
+            .from("referral_credits")
+            .insert({ user_id: referrer.id, kind: "friend", friend_id: userId });
+          if (creditError && creditError.code !== "23505") {
+            return NextResponse.json({ error: "Database error" }, { status: 500 });
           }
-          if (referrer.stripe_subscription_id && process.env.STRIPE_COUPON_REFERRAL) {
+        }
+      }
+    }
+  }
+
+  // Renewals: if the customer has an unused referral coupon, take 20% off this
+  // invoice. The invoice is still a draft when this event arrives.
+  if (event.type === "invoice.created") {
+    const invoice = event.data.object as Stripe.Invoice;
+
+    if (invoice.billing_reason === "subscription_cycle" && invoice.status === "draft") {
+      const customerId =
+        typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
+
+      if (customerId) {
+        const { data: buyer } = await admin
+          .from("profiles")
+          .select("id, plan")
+          .eq("stripe_customer_id", customerId)
+          .maybeSingle();
+
+        if (buyer && buyer.plan !== "lifetime") {
+          const { data: spent, error: spendError } = await admin.rpc("spend_referral_credit", {
+            p_user: buyer.id,
+            p_ref: invoice.id,
+          });
+          if (spendError) {
+            return NextResponse.json({ error: "Database error" }, { status: 500 });
+          }
+
+          if (spent) {
             try {
-              await getStripe().subscriptions.update(referrer.stripe_subscription_id, {
-                discounts: [{ coupon: process.env.STRIPE_COUPON_REFERRAL }],
+              await getStripe().invoices.update(invoice.id as string, {
+                discounts: [{ coupon: await getReferralCouponId() }],
               });
             } catch {
-              // non-fatal — has_referral_discount is already set for next time
+              // Retry: the coupon is already spent for this invoice, so the
+              // retry only re-applies the discount.
+              return NextResponse.json({ error: "Stripe error" }, { status: 500 });
             }
           }
         }
@@ -81,16 +148,35 @@ export async function POST(request: NextRequest) {
     const periodEndUnix: number | undefined =
       subAny.current_period_end ?? subAny.items?.data?.[0]?.current_period_end;
 
-    await admin
+    const { data: current } = await admin
       .from("profiles")
-      .update({
+      .select("id, plan")
+      .eq("stripe_customer_id", customerId)
+      .maybeSingle();
+
+    if (current) {
+      const update: Record<string, unknown> = {
         subscription_status: status,
         subscription_period_end: periodEndUnix
           ? new Date(periodEndUnix * 1000).toISOString()
           : null,
-        plan: status === "canceled" || status === "unpaid" ? "free" : "pro",
-      })
-      .eq("stripe_customer_id", customerId);
+      };
+
+      // A lifetime plan is never changed by subscription events.
+      if (current.plan !== "lifetime") {
+        if (GRANT_STATUSES.has(status)) update.plan = "pro";
+        else if (REVOKE_STATUSES.has(status)) update.plan = "free";
+      }
+
+      const { error: updateError } = await admin
+        .from("profiles")
+        .update(update)
+        .eq("id", current.id);
+
+      if (updateError) {
+        return NextResponse.json({ error: "Database error" }, { status: 500 });
+      }
+    }
   }
 
   return NextResponse.json({ received: true });
