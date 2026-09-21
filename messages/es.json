@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "daily": "Diario",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "quickTasks": "Tareas rápidas",
+    "focusMode": "Modo Enfoque",
+    "settings": "Ajustes",
+    "billing": "Facturación",
+    "logout": "Cerrar sesión",
+    "newProject": "+ Nuevo proyecto",
+    "projects": "Proyectos",
+    "noProjects": "Aún no hay proyectos",
+    "notifications": "Notificaciones",
+    "markAllRead": "Marcar todo como leído",
+    "nothingYet": "Nada por aquí."
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "add": "Añadir",
+    "edit": "Editar",
+    "loading": "Cargando…",
+    "close": "Cerrar",
+    "language": "Idioma"
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "subtitle": "Bienvenido de nuevo.",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "submit": "Iniciar sesión",
+      "submitting": "Iniciando sesión…",
+      "noAccount": "¿No tienes cuenta?",
+      "signUp": "Regístrate"
+    },
+    "signup": {
+      "title": "Crea tu cuenta",
+      "subtitle": "Gratis — sin tarjeta de crédito.",
+      "referredSubtitle": "Te han recomendado — te espera un 20% de descuento.",
+      "fullName": "Nombre completo",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "passwordHint": "Al menos 6 caracteres",
+      "submit": "Registrarse",
+      "submitting": "Creando…",
+      "haveAccount": "¿Ya tienes cuenta?",
+      "logIn": "Iniciar sesión",
+      "terms": "Al registrarte aceptas nuestros",
+      "and": "y nuestra",
+      "checkEmail": "Revisa tu correo",
+      "checkEmailBody": "Enviamos un enlace de confirmación a {email}. Haz clic en él y vuelve para iniciar sesión."
+    }
+  },
+  "daily": {
+    "title": "Hoy — {date}",
+    "addPlaceholder": "Añadir una tarea para hoy…",
+    "overdue": "Atrasadas ({count})",
+    "today": "Hoy",
+    "empty": "Nada pendiente para hoy. Añade algo arriba."
+  }
+}

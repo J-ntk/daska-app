@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "daily": "Täglich",
+    "weekly": "Wöchentlich",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
+    "quickTasks": "Schnelle Aufgaben",
+    "focusMode": "Fokus-Modus",
+    "settings": "Einstellungen",
+    "billing": "Abrechnung",
+    "logout": "Abmelden",
+    "newProject": "+ Neues Projekt",
+    "projects": "Projekte",
+    "noProjects": "Noch keine Projekte",
+    "notifications": "Benachrichtigungen",
+    "markAllRead": "Alle als gelesen markieren",
+    "nothingYet": "Noch nichts."
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "add": "Hinzufügen",
+    "edit": "Bearbeiten",
+    "loading": "Wird geladen…",
+    "close": "Schließen",
+    "language": "Sprache"
+  },
+  "auth": {
+    "login": {
+      "title": "Anmelden",
+      "subtitle": "Willkommen zurück.",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "submit": "Anmelden",
+      "submitting": "Anmeldung…",
+      "noAccount": "Noch kein Konto?",
+      "signUp": "Registrieren"
+    },
+    "signup": {
+      "title": "Konto erstellen",
+      "subtitle": "Kostenlos — keine Kreditkarte nötig.",
+      "referredSubtitle": "Du wurdest eingeladen — 20 % Rabatt warten auf dich.",
+      "fullName": "Vollständiger Name",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "passwordHint": "Mindestens 6 Zeichen",
+      "submit": "Registrieren",
+      "submitting": "Wird erstellt…",
+      "haveAccount": "Schon ein Konto?",
+      "logIn": "Anmelden",
+      "terms": "Mit der Registrierung stimmst du unseren",
+      "and": "und der",
+      "checkEmail": "Prüfe deine E-Mails",
+      "checkEmailBody": "Wir haben einen Bestätigungslink an {email} gesendet. Klicke darauf und komm dann zurück, um dich anzumelden."
+    }
+  },
+  "daily": {
+    "title": "Heute — {date}",
+    "addPlaceholder": "Aufgabe für heute hinzufügen…",
+    "overdue": "Überfällig ({count})",
+    "today": "Heute",
+    "empty": "Heute steht nichts an. Füge oben etwas hinzu."
+  }
+}

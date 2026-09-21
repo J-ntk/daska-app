@@ -4,8 +4,16 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.redirect(new URL("/login", request.url));
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    return NextResponse.redirect(new URL("/app/settings?google=error", request.url));
+  }
 
   const redirectUri = new URL("/api/auth/google/callback", request.url).toString();
   const authUrl = getGoogleAuthUrl(redirectUri, user.id);

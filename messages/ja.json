@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "daily": "デイリー",
+    "weekly": "ウィークリー",
+    "monthly": "マンスリー",
+    "yearly": "イヤリー",
+    "quickTasks": "クイックタスク",
+    "focusMode": "フォーカスモード",
+    "settings": "設定",
+    "billing": "お支払い",
+    "logout": "ログアウト",
+    "newProject": "+ 新しいプロジェクト",
+    "projects": "プロジェクト",
+    "noProjects": "まだプロジェクトがありません",
+    "notifications": "通知",
+    "markAllRead": "すべて既読にする",
+    "nothingYet": "まだ何もありません。"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "add": "追加",
+    "edit": "編集",
+    "loading": "読み込み中…",
+    "close": "閉じる",
+    "language": "言語"
+  },
+  "auth": {
+    "login": {
+      "title": "ログイン",
+      "subtitle": "おかえりなさい。",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "submit": "ログイン",
+      "submitting": "ログイン中…",
+      "noAccount": "アカウントをお持ちでないですか？",
+      "signUp": "新規登録"
+    },
+    "signup": {
+      "title": "アカウントを作成",
+      "subtitle": "無料 — クレジットカード不要。",
+      "referredSubtitle": "招待を受けました — 20%オフが待っています。",
+      "fullName": "氏名",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "passwordHint": "6文字以上",
+      "submit": "登録",
+      "submitting": "作成中…",
+      "haveAccount": "すでにアカウントをお持ちですか？",
+      "logIn": "ログイン",
+      "terms": "登録することで、以下に同意したことになります：",
+      "and": "および",
+      "checkEmail": "メールをご確認ください",
+      "checkEmailBody": "{email} に確認リンクを送信しました。リンクをクリックしてからログインしてください。"
+    }
+  },
+  "daily": {
+    "title": "今日 — {date}",
+    "addPlaceholder": "今日のタスクを追加…",
+    "overdue": "期限切れ（{count}）",
+    "today": "今日",
+    "empty": "今日のタスクはありません。上に追加してください。"
+  }
+}

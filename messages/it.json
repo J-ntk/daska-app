@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "daily": "Giornaliero",
+    "weekly": "Settimanale",
+    "monthly": "Mensile",
+    "yearly": "Annuale",
+    "quickTasks": "Attività rapide",
+    "focusMode": "Modalità Focus",
+    "settings": "Impostazioni",
+    "billing": "Fatturazione",
+    "logout": "Esci",
+    "newProject": "+ Nuovo progetto",
+    "projects": "Progetti",
+    "noProjects": "Ancora nessun progetto",
+    "notifications": "Notifiche",
+    "markAllRead": "Segna tutte come lette",
+    "nothingYet": "Ancora niente."
+  },
+  "common": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "add": "Aggiungi",
+    "edit": "Modifica",
+    "loading": "Caricamento…",
+    "close": "Chiudi",
+    "language": "Lingua"
+  },
+  "auth": {
+    "login": {
+      "title": "Accedi",
+      "subtitle": "Bentornato.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Accedi",
+      "submitting": "Accesso…",
+      "noAccount": "Non hai un account?",
+      "signUp": "Registrati"
+    },
+    "signup": {
+      "title": "Crea il tuo account",
+      "subtitle": "Gratis — nessuna carta di credito.",
+      "referredSubtitle": "Sei stato invitato — ti aspetta il 20% di sconto.",
+      "fullName": "Nome completo",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "Almeno 6 caratteri",
+      "submit": "Registrati",
+      "submitting": "Creazione…",
+      "haveAccount": "Hai già un account?",
+      "logIn": "Accedi",
+      "terms": "Registrandoti accetti i nostri",
+      "and": "e la",
+      "checkEmail": "Controlla la tua email",
+      "checkEmailBody": "Abbiamo inviato un link di conferma a {email}. Cliccalo e poi torna per accedere."
+    }
+  },
+  "daily": {
+    "title": "Oggi — {date}",
+    "addPlaceholder": "Aggiungi un'attività per oggi…",
+    "overdue": "In ritardo ({count})",
+    "today": "Oggi",
+    "empty": "Nessuna attività per oggi. Aggiungine una qui sopra."
+  }
+}

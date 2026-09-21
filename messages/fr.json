@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "daily": "Quotidien",
+    "weekly": "Hebdomadaire",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "quickTasks": "Tâches rapides",
+    "focusMode": "Mode Focus",
+    "settings": "Paramètres",
+    "billing": "Facturation",
+    "logout": "Déconnexion",
+    "newProject": "+ Nouveau projet",
+    "projects": "Projets",
+    "noProjects": "Aucun projet pour l'instant",
+    "notifications": "Notifications",
+    "markAllRead": "Tout marquer comme lu",
+    "nothingYet": "Rien pour l'instant."
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "add": "Ajouter",
+    "edit": "Modifier",
+    "loading": "Chargement…",
+    "close": "Fermer",
+    "language": "Langue"
+  },
+  "auth": {
+    "login": {
+      "title": "Connexion",
+      "subtitle": "Content de vous revoir.",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "submitting": "Connexion…",
+      "noAccount": "Pas de compte ?",
+      "signUp": "S'inscrire"
+    },
+    "signup": {
+      "title": "Créez votre compte",
+      "subtitle": "Gratuit — sans carte bancaire.",
+      "referredSubtitle": "Vous avez été parrainé — 20 % de réduction vous attend.",
+      "fullName": "Nom complet",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "passwordHint": "Au moins 6 caractères",
+      "submit": "S'inscrire",
+      "submitting": "Création…",
+      "haveAccount": "Déjà un compte ?",
+      "logIn": "Se connecter",
+      "terms": "En vous inscrivant, vous acceptez nos",
+      "and": "et notre",
+      "checkEmail": "Vérifiez vos e-mails",
+      "checkEmailBody": "Nous avons envoyé un lien de confirmation à {email}. Cliquez dessus puis revenez vous connecter."
+    }
+  },
+  "daily": {
+    "title": "Aujourd'hui — {date}",
+    "addPlaceholder": "Ajouter une tâche pour aujourd'hui…",
+    "overdue": "En retard ({count})",
+    "today": "Aujourd'hui",
+    "empty": "Rien de prévu aujourd'hui. Ajoutez quelque chose ci-dessus."
+  }
+}

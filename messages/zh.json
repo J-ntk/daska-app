@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "daily": "每日",
+    "weekly": "每周",
+    "monthly": "每月",
+    "yearly": "每年",
+    "quickTasks": "快速任务",
+    "focusMode": "专注模式",
+    "settings": "设置",
+    "billing": "账单",
+    "logout": "退出登录",
+    "newProject": "+ 新建项目",
+    "projects": "项目",
+    "noProjects": "暂无项目",
+    "notifications": "通知",
+    "markAllRead": "全部标为已读",
+    "nothingYet": "暂时没有内容。"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "add": "添加",
+    "edit": "编辑",
+    "loading": "加载中…",
+    "close": "关闭",
+    "language": "语言"
+  },
+  "auth": {
+    "login": {
+      "title": "登录",
+      "subtitle": "欢迎回来。",
+      "email": "邮箱",
+      "password": "密码",
+      "submit": "登录",
+      "submitting": "登录中…",
+      "noAccount": "还没有账号？",
+      "signUp": "注册"
+    },
+    "signup": {
+      "title": "创建账号",
+      "subtitle": "免费 — 无需信用卡。",
+      "referredSubtitle": "有人邀请了你 — 20% 折扣等着你。",
+      "fullName": "姓名",
+      "email": "邮箱",
+      "password": "密码",
+      "passwordHint": "至少 6 个字符",
+      "submit": "注册",
+      "submitting": "创建中…",
+      "haveAccount": "已有账号？",
+      "logIn": "登录",
+      "terms": "注册即表示您同意我们的",
+      "and": "和",
+      "checkEmail": "请查收邮件",
+      "checkEmailBody": "我们已向 {email} 发送了确认链接。点击链接后返回登录。"
+    }
+  },
+  "daily": {
+    "title": "今天 — {date}",
+    "addPlaceholder": "添加今天的任务…",
+    "overdue": "已逾期（{count}）",
+    "today": "今天",
+    "empty": "今天没有待办任务，可在上方添加。"
+  }
+}
