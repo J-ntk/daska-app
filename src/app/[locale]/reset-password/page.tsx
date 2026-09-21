@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter, Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginPage() {
-  const t = useTranslations("auth.login");
+export default function ResetPasswordPage() {
+  const t = useTranslations("auth.reset");
+  const tl = useTranslations("auth.login");
   const router = useRouter();
   const supabase = createClient();
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.updateUser({ password });
     setLoading(false);
     if (error) {
       setError(error.message);
@@ -43,20 +43,11 @@ export default function LoginPage() {
           </div>
         )}
 
-        <label className="block text-xs font-medium mb-1">{t("email")}</label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border border-line rounded-lg px-3 py-2 text-sm mb-4"
-          placeholder="you@example.com"
-        />
-
-        <label className="block text-xs font-medium mb-1">{t("password")}</label>
+        <label className="block text-xs font-medium mb-1">{tl("password")}</label>
         <input
           type="password"
           required
+          minLength={6}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full border border-line rounded-lg px-3 py-2 text-sm mb-6"
@@ -70,22 +61,6 @@ export default function LoginPage() {
         >
           {loading ? t("submitting") : t("submit")}
         </button>
-
-        <p className="text-xs text-center text-ink/60 mt-4">
-          {t("noAccount")}{" "}
-          <Link href="/signup" className="text-accent underline">
-            {t("signUp")}
-           </Link>
-            {" · "}
-          <Link href="/forgot-password" className="text-accent underline">
-            {t("forgotPassword")}
-          </Link>
-        </p>
-        <p className="text-[10px] text-center text-ink/30 mt-3">
-          <Link href="/privacy" className="underline">Privacy</Link>
-          {" · "}
-          <Link href="/terms" className="underline">Terms</Link>
-        </p>
       </form>
     </div>
   );

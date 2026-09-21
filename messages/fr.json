@@ -35,7 +35,8 @@
       "submit": "Se connecter",
       "submitting": "Connexion…",
       "noAccount": "Pas de compte ?",
-      "signUp": "S'inscrire"
+      "signUp": "S'inscrire",
+      "forgotPassword": "Mot de passe oublié ?"
     },
     "signup": {
       "title": "Créez votre compte",
@@ -53,6 +54,21 @@
       "and": "et notre",
       "checkEmail": "Vérifiez vos e-mails",
       "checkEmailBody": "Nous avons envoyé un lien de confirmation à {email}. Cliquez dessus puis revenez vous connecter."
+    },
+    "forgot": {
+      "title": "Réinitialisez votre mot de passe",
+      "subtitle": "Saisissez votre e-mail et nous vous enverrons un lien de réinitialisation.",
+      "submit": "Envoyer le lien",
+      "submitting": "Envoi…",
+      "sentTitle": "Vérifiez vos e-mails",
+      "sentBody": "Si un compte existe pour {email}, nous avons envoyé un lien de réinitialisation. Cliquez dessus pour choisir un nouveau mot de passe.",
+      "back": "Retour à la connexion"
+    },
+    "reset": {
+      "title": "Choisissez un nouveau mot de passe",
+      "subtitle": "Saisissez un nouveau mot de passe pour votre compte.",
+      "submit": "Mettre à jour le mot de passe",
+      "submitting": "Mise à jour…"
     }
   },
   "daily": {

@@ -72,6 +72,8 @@ export async function middleware(request: NextRequest) {
 
   const isPublicPage =
     isAuthPage ||
+    pathWithoutLocale.startsWith("/forgot-password") ||
+    pathWithoutLocale.startsWith("/reset-password") ||
     pathWithoutLocale.startsWith("/privacy") ||
     pathWithoutLocale.startsWith("/terms");
 

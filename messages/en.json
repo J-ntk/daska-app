@@ -35,7 +35,8 @@
       "submit": "Log in",
       "submitting": "Logging in…",
       "noAccount": "No account?",
-      "signUp": "Sign up"
+      "signUp": "Sign up",
+      "forgotPassword": "Forgot password?"
     },
     "signup": {
       "title": "Create your account",
@@ -53,6 +54,21 @@
       "and": "and",
       "checkEmail": "Check your email",
       "checkEmailBody": "We sent a confirmation link to {email}. Click it, then come back and log in."
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "subtitle": "Enter your email and we'll send you a reset link.",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "sentTitle": "Check your email",
+      "sentBody": "If an account exists for {email}, we sent a reset link. Click it to choose a new password.",
+      "back": "Back to log in"
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "subtitle": "Enter a new password for your account.",
+      "submit": "Update password",
+      "submitting": "Updating…"
     }
   },
   "daily": {
