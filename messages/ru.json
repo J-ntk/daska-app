@@ -77,5 +77,20 @@
     "overdue": "Просрочено ({count})",
     "today": "Сегодня",
     "empty": "На сегодня задач нет. Добавьте что-нибудь выше."
+  },
+  "notifications": {
+    "invitedTo": "Вас пригласили в {project}",
+    "invitedBy": "{name} приглашает вас в {project}",
+    "roleLabel": "Роль: {role}",
+    "accept": "Принять",
+    "decline": "Отклонить",
+    "error": "Что-то пошло не так. Попробуйте ещё раз.",
+    "unnamedProject": "Проект без названия",
+    "roles": {
+      "owner": "Владелец",
+      "admin": "Администратор",
+      "editor": "Редактор",
+      "viewer": "Читатель"
+    }
   }
 }

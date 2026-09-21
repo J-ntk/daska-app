@@ -77,5 +77,20 @@
     "overdue": "已逾期（{count}）",
     "today": "今天",
     "empty": "今天没有待办任务，可在上方添加。"
+  },
+  "notifications": {
+    "invitedTo": "你被邀请加入 {project}",
+    "invitedBy": "{name} 邀请你加入 {project}",
+    "roleLabel": "角色：{role}",
+    "accept": "接受",
+    "decline": "拒绝",
+    "error": "出了点问题，请重试。",
+    "unnamedProject": "未命名项目",
+    "roles": {
+      "owner": "所有者",
+      "admin": "管理员",
+      "editor": "编辑者",
+      "viewer": "查看者"
+    }
   }
 }

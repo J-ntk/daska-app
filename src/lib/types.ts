@@ -60,12 +60,23 @@ export interface Comment {
 export interface Notification {
   id: string;
   user_id: string;
-  type: "mention" | "assignment";
+  type: "mention" | "assignment" | "invite";
   project_id: string | null;
   task_id: string | null;
   body: string;
   read: boolean;
   created_at: string;
+  /**
+   * Only set on type "invite". These items are not rows in the
+   * notifications table: they are built from pending project_members
+   * rows (see getShellData.ts), so they always reflect the live invite.
+   */
+  invite?: {
+    member_id: string;
+    project_name: string;
+    role: Role;
+    invited_by_name: string | null;
+  };
 }
 
 export interface TimeEntry {
@@ -77,3 +88,28 @@ export interface TimeEntry {
   duration_seconds: number;
   created_at: string;
 }
+
+export type InviteResult =
+  | { ok: true; kind: "existing" | "email"; emailSent?: boolean }
+  | {
+      ok: false;
+      error:
+        | "not_authenticated"
+        | "invalid_email"
+        | "already_member"
+        | "already_invited"
+        | "failed";
+      message?: string;
+    };
+
+export type LookupResult =
+  | {
+      status: "found";
+      profile: { email: string; full_name: string | null; avatar_url: string | null };
+    }
+  | { status: "not_found" }
+  | { status: "already_member" }
+  | { status: "already_invited" }
+  | { status: "invalid_email" }
+  | { status: "not_allowed" }
+  | { status: "error" };

@@ -77,5 +77,20 @@
     "overdue": "期限切れ（{count}）",
     "today": "今日",
     "empty": "今日のタスクはありません。上に追加してください。"
+  },
+  "notifications": {
+    "invitedTo": "{project} に招待されました",
+    "invitedBy": "{name} さんが {project} に招待しました",
+    "roleLabel": "役割：{role}",
+    "accept": "承諾",
+    "decline": "辞退",
+    "error": "問題が発生しました。もう一度お試しください。",
+    "unnamedProject": "名称未設定のプロジェクト",
+    "roles": {
+      "owner": "オーナー",
+      "admin": "管理者",
+      "editor": "編集者",
+      "viewer": "閲覧者"
+    }
   }
 }

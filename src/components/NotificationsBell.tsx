@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { markAllNotificationsRead } from "@/lib/actions/notifications";
+import InviteCard from "@/components/InviteCard";
 import type { Notification } from "@/lib/types";
 import { formatDistanceToNow } from "date-fns";
 
@@ -50,21 +51,29 @@ export default function NotificationsBell({
             {notifications.length === 0 && (
               <p className="text-xs text-inkMuted">{t("nothingYet")}</p>
             )}
-            {notifications.map((n) => (
-              <Link
-                key={n.id}
-                href={n.project_id ? `/projects/${n.project_id}` : "/app/daily"}
-                onClick={() => setOpen(false)}
-                className={`block text-xs border border-line rounded-lg p-2 hover:border-accent transition-colors ${
-                  n.read ? "opacity-50" : ""
-                }`}
-              >
-                <div>{n.body}</div>
-                <div className="text-[10px] text-inkMuted mt-0.5">
-                  {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
-                </div>
-              </Link>
-            ))}
+            {notifications.map((n) =>
+              n.type === "invite" ? (
+                <InviteCard
+                  key={n.id}
+                  notification={n}
+                  onDone={() => setOpen(false)}
+                />
+              ) : (
+                <Link
+                  key={n.id}
+                  href={n.project_id ? `/projects/${n.project_id}` : "/app/daily"}
+                  onClick={() => setOpen(false)}
+                  className={`block text-xs border border-line rounded-lg p-2 hover:border-accent transition-colors ${
+                    n.read ? "opacity-50" : ""
+                  }`}
+                >
+                  <div>{n.body}</div>
+                  <div className="text-[10px] text-inkMuted mt-0.5">
+                    {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })}
+                  </div>
+                </Link>
+              )
+            )}
           </div>
         </div>
       )}

@@ -77,5 +77,20 @@
     "overdue": "Overdue ({count})",
     "today": "Today",
     "empty": "Nothing due today. Add something above."
+  },
+  "notifications": {
+    "invitedTo": "You've been invited to {project}",
+    "invitedBy": "{name} invited you to {project}",
+    "roleLabel": "Role: {role}",
+    "accept": "Accept",
+    "decline": "Decline",
+    "error": "Something went wrong. Please try again.",
+    "unnamedProject": "Untitled project",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "editor": "Editor",
+      "viewer": "Viewer"
+    }
   }
 }

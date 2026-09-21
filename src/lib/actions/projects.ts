@@ -5,7 +5,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import { addDays, format } from "date-fns";
 import { PROJECT_TEMPLATES } from "@/lib/templates";
-import type { Role } from "@/lib/types";
+import { EMAIL_RE, findExistingMembership, normalizeEmail } from "@/lib/memberships";
+import type { InviteResult, Role } from "@/lib/types";
 
 export async function createProject(input: {
   name: string;
@@ -78,60 +79,74 @@ export async function inviteMember(input: {
   projectId: string;
   email: string;
   role: Role;
-}) {
+}): Promise<InviteResult> {
   const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "not_authenticated" };
 
-  const { data: project } = await supabase
-    .from("projects")
-    .select("name")
-    .eq("id", input.projectId)
-    .single();
+  const email = normalizeEmail(input.email);
+  if (!EMAIL_RE.test(email)) return { ok: false, error: "invalid_email" };
 
-  // Check if a profile already exists for this email
+  // Does this address already belong to a Daska account?
+  const admin = createAdminClient();
   const { data: existingProfile } = await supabase
     .from("profiles")
     .select("id")
-    .eq("email", input.email)
+    .eq("email", email)
     .maybeSingle();
 
+  const existing = await findExistingMembership(
+    supabase,
+    input.projectId,
+    email,
+    existingProfile?.id ?? null
+  );
+  if (existing) {
+    return {
+      ok: false,
+      error: existing.status === "active" ? "already_member" : "already_invited",
+    };
+  }
+
+  // Always pending. Existing accounts see the invite in their notifications
+  // and accept or decline it; new people get it once they sign up.
   const { error } = await supabase.from("project_members").insert({
     project_id: input.projectId,
     user_id: existingProfile?.id ?? null,
-    invited_email: input.email,
+    invited_email: email,
+    invited_by: user.id,
     role: input.role,
-    status: existingProfile ? "active" : "pending",
+    status: "pending",
   });
 
-  if (error) throw new Error(error.message);
+  if (error) return { ok: false, error: "failed", message: error.message };
 
-  // If this person already has an account, drop them an in-app
-  // notification instead of an email (they're already a user).
-  if (existingProfile) {
-    await supabase.from("notifications").insert({
-      user_id: existingProfile.id,
-      type: "assignment",
-      project_id: input.projectId,
-      body: `You were added to "${project?.name ?? "a project"}"`,
-    });
-  } else {
+  let emailSent: boolean | undefined;
+
+  if (!existingProfile) {
     // No account yet — send a real invite email via Supabase Auth.
     // Requires SUPABASE_SERVICE_ROLE_KEY to be set (see README). If it's
-    // not configured, the invite still works — they just won't get an
-    // email and will need the shareable link or to sign up manually.
-    const admin = createAdminClient();
+    // not configured, the invite row still exists — they just won't get an
+    // email and will need to sign up with this address.
+    emailSent = false;
     if (admin) {
       try {
-        await admin.auth.admin.inviteUserByEmail(input.email, {
+        const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
           data: { invited_to_project: input.projectId },
         });
+        emailSent = !inviteError;
       } catch {
         // e.g. rate-limited or already invited — non-fatal, the
         // membership row above still grants access once they sign up.
+        emailSent = false;
       }
     }
   }
 
   revalidatePath("/[locale]/projects", "layout");
+  return { ok: true, kind: existingProfile ? "existing" : "email", emailSent };
 }
 
 export async function removeMember(projectId: string, memberId: string) {

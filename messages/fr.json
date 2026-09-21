@@ -77,5 +77,20 @@
     "overdue": "En retard ({count})",
     "today": "Aujourd'hui",
     "empty": "Rien de prévu aujourd'hui. Ajoutez quelque chose ci-dessus."
+  },
+  "notifications": {
+    "invitedTo": "Invitation à rejoindre {project}",
+    "invitedBy": "{name} vous invite à rejoindre {project}",
+    "roleLabel": "Rôle : {role}",
+    "accept": "Accepter",
+    "decline": "Refuser",
+    "error": "Une erreur s'est produite. Veuillez réessayer.",
+    "unnamedProject": "Projet sans nom",
+    "roles": {
+      "owner": "Propriétaire",
+      "admin": "Administrateur",
+      "editor": "Éditeur",
+      "viewer": "Lecteur"
+    }
   }
 }

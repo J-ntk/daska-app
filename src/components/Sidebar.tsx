@@ -26,13 +26,14 @@ export default function Sidebar({
   const router = useRouter();
   const supabase = createClient();
 
-  const navItems = [
+  const navItems: { href: string; label: string; badge?: number }[] = [
     { href: "/app/daily", label: t("daily") },
     { href: "/app/weekly", label: t("weekly") },
     { href: "/app/monthly", label: t("monthly") },
     { href: "/app/yearly", label: t("yearly") },
     { href: "/app/quick-tasks", label: t("quickTasks") },
     { href: "/app/focus", label: t("focusMode") },
+    { href: "/app/notifications", label: t("notifications"), badge: unreadCount },
   ];
 
   async function handleLogout() {
@@ -67,13 +68,18 @@ export default function Sidebar({
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className={`block text-sm px-3 py-2 rounded-lg transition-colors ${
+            className={`flex items-center justify-between text-sm px-3 py-2 rounded-lg transition-colors ${
               pathname === item.href
                 ? "bg-accent/15 text-accentLight font-medium shadow-glow"
                 : "text-inkMuted hover:bg-surfaceHover hover:text-ink"
             }`}
           >
-            {item.label}
+            <span>{item.label}</span>
+            {item.badge !== undefined && item.badge > 0 && (
+              <span className="bg-accent text-white text-[10px] rounded-full px-1.5 py-0.5 font-semibold">
+                {item.badge}
+              </span>
+            )}
           </Link>
         ))}
       </nav>

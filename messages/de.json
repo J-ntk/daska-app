@@ -77,5 +77,20 @@
     "overdue": "Überfällig ({count})",
     "today": "Heute",
     "empty": "Heute steht nichts an. Füge oben etwas hinzu."
+  },
+  "notifications": {
+    "invitedTo": "Du wurdest zu {project} eingeladen",
+    "invitedBy": "{name} hat dich zu {project} eingeladen",
+    "roleLabel": "Rolle: {role}",
+    "accept": "Annehmen",
+    "decline": "Ablehnen",
+    "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+    "unnamedProject": "Unbenanntes Projekt",
+    "roles": {
+      "owner": "Inhaber",
+      "admin": "Admin",
+      "editor": "Bearbeiter",
+      "viewer": "Betrachter"
+    }
   }
 }
