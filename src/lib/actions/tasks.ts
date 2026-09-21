@@ -36,8 +36,8 @@ export async function createTask(input: {
 
   if (error) throw new Error(error.message);
 
-  revalidatePath("/app", "layout");
-  if (input.projectId) revalidatePath(`/projects/${input.projectId}`);
+  revalidatePath("/[locale]/app", "layout");
+  if (input.projectId) revalidatePath("/[locale]/projects", "layout");
 }
 
 function nextDueDate(current: string, rule: string): string {
@@ -62,6 +62,7 @@ export async function setTaskStatus(taskId: string, status: "todo" | "in_progres
 
   if (error) throw new Error(error.message);
 
+  // Recurring task completed -> spin up the next instance automatically
   if (status === "done" && task?.recurrence_rule && task?.due_date) {
     await supabase.from("tasks").insert({
       title: task.title,
@@ -75,21 +76,21 @@ export async function setTaskStatus(taskId: string, status: "todo" | "in_progres
     });
   }
 
-  revalidatePath("/app", "layout");
-  revalidatePath("/projects", "layout");
+  revalidatePath("/[locale]/app", "layout");
+  revalidatePath("/[locale]/projects", "layout");
 }
 
 export async function moveTaskDate(taskId: string, newDate: string) {
   const supabase = createClient();
   const { error } = await supabase.from("tasks").update({ due_date: newDate }).eq("id", taskId);
   if (error) throw new Error(error.message);
-  revalidatePath("/app", "layout");
+  revalidatePath("/[locale]/app", "layout");
 }
 
 export async function deleteTask(taskId: string) {
   const supabase = createClient();
   const { error } = await supabase.from("tasks").delete().eq("id", taskId);
   if (error) throw new Error(error.message);
-  revalidatePath("/app", "layout");
-  revalidatePath("/projects", "layout");
+  revalidatePath("/[locale]/app", "layout");
+  revalidatePath("/[locale]/projects", "layout");
 }

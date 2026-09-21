@@ -30,7 +30,7 @@ export async function saveAiSettings(input: {
   );
 
   if (error) throw new Error(error.message);
-  revalidatePath("/app/settings");
+  revalidatePath("/[locale]/app/settings", "layout");
 }
 
 export async function deleteAiSettings() {
@@ -41,7 +41,7 @@ export async function deleteAiSettings() {
   if (!user) return;
 
   await supabase.from("user_ai_settings").delete().eq("user_id", user.id);
-  revalidatePath("/app/settings");
+  revalidatePath("/[locale]/app/settings", "layout");
 }
 
 export async function breakdownGoal(goal: string): Promise<SuggestedTask[]> {
@@ -85,5 +85,5 @@ export async function createTasksFromBreakdown(items: SuggestedTask[]) {
   const { error } = await supabase.from("tasks").insert(rows);
   if (error) throw new Error(error.message);
 
-  revalidatePath("/app", "layout");
+  revalidatePath("/[locale]/app", "layout");
 }

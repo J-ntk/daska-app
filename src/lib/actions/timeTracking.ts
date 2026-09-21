@@ -25,6 +25,6 @@ export async function logTimeEntry(taskId: string, durationSeconds: number) {
 
   if (error) throw new Error(error.message);
 
-  revalidatePath("/app/focus");
-  revalidatePath("/projects", "layout");
+  revalidatePath("/[locale]/app/focus", "layout");
+  revalidatePath("/[locale]/projects", "layout");
 }

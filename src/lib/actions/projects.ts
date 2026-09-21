@@ -45,6 +45,7 @@ export async function createProject(input: {
 
   if (error) throw new Error(error.message);
 
+  // add the creator as owner in project_members
   const { error: memberError } = await supabase.from("project_members").insert({
     project_id: data.id,
     user_id: user.id,
@@ -53,6 +54,7 @@ export async function createProject(input: {
   });
   if (memberError) throw new Error(memberError.message);
 
+  // Seed tasks from the chosen template, if any
   const template = PROJECT_TEMPLATES.find((t) => t.id === input.templateId);
   if (template && template.tasks.length > 0) {
     const today = new Date();
@@ -68,7 +70,7 @@ export async function createProject(input: {
     await supabase.from("tasks").insert(rows);
   }
 
-  revalidatePath("/app", "layout");
+  revalidatePath("/[locale]/app", "layout");
   return { id: data.id };
 }
 
@@ -85,6 +87,7 @@ export async function inviteMember(input: {
     .eq("id", input.projectId)
     .single();
 
+  // Check if a profile already exists for this email
   const { data: existingProfile } = await supabase
     .from("profiles")
     .select("id")
@@ -101,6 +104,8 @@ export async function inviteMember(input: {
 
   if (error) throw new Error(error.message);
 
+  // If this person already has an account, drop them an in-app
+  // notification instead of an email (they're already a user).
   if (existingProfile) {
     await supabase.from("notifications").insert({
       user_id: existingProfile.id,
@@ -109,6 +114,10 @@ export async function inviteMember(input: {
       body: `You were added to "${project?.name ?? "a project"}"`,
     });
   } else {
+    // No account yet — send a real invite email via Supabase Auth.
+    // Requires SUPABASE_SERVICE_ROLE_KEY to be set (see README). If it's
+    // not configured, the invite still works — they just won't get an
+    // email and will need the shareable link or to sign up manually.
     const admin = createAdminClient();
     if (admin) {
       try {
@@ -116,12 +125,13 @@ export async function inviteMember(input: {
           data: { invited_to_project: input.projectId },
         });
       } catch {
-        // non-fatal
+        // e.g. rate-limited or already invited — non-fatal, the
+        // membership row above still grants access once they sign up.
       }
     }
   }
 
-  revalidatePath(`/projects/${input.projectId}`);
+  revalidatePath("/[locale]/projects", "layout");
 }
 
 export async function removeMember(projectId: string, memberId: string) {
@@ -131,7 +141,7 @@ export async function removeMember(projectId: string, memberId: string) {
     .delete()
     .eq("id", memberId);
   if (error) throw new Error(error.message);
-  revalidatePath(`/projects/${projectId}`);
+  revalidatePath("/[locale]/projects", "layout");
 }
 
 export async function updateMemberRole(projectId: string, memberId: string, role: Role) {
@@ -141,5 +151,5 @@ export async function updateMemberRole(projectId: string, memberId: string, role
     .update({ role })
     .eq("id", memberId);
   if (error) throw new Error(error.message);
-  revalidatePath(`/projects/${projectId}`);
+  revalidatePath("/[locale]/projects", "layout");
 }

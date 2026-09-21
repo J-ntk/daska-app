@@ -6,7 +6,9 @@ import { revalidatePath } from "next/cache";
 
 export async function syncTaskToCalendar(taskId: string) {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
   const { data: task } = await supabase.from("tasks").select("*").eq("id", taskId).single();
@@ -23,6 +25,7 @@ export async function syncTaskToCalendar(taskId: string) {
 
   let accessToken = integration.access_token;
 
+  // Refresh if the token is expired or about to expire
   const expiresAt = integration.expires_at ? new Date(integration.expires_at) : null;
   if (expiresAt && expiresAt.getTime() < Date.now() + 60_000) {
     if (!integration.refresh_token) {
@@ -47,15 +50,17 @@ export async function syncTaskToCalendar(taskId: string) {
 
   await supabase.from("tasks").update({ google_event_id: event.id }).eq("id", taskId);
 
-  revalidatePath("/app", "layout");
-  revalidatePath("/projects", "layout");
+  revalidatePath("/[locale]/app", "layout");
+  revalidatePath("/[locale]/projects", "layout");
 }
 
 export async function disconnectGoogleCalendar() {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return;
 
   await supabase.from("user_integrations").delete().eq("user_id", user.id).eq("provider", "google");
-  revalidatePath("/app/settings");
+  revalidatePath("/[locale]/app/settings", "layout");
 }

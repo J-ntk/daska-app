@@ -1,20 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { usePathname, useRouter, Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import NotificationsBell from "@/components/NotificationsBell";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import type { Project, Notification } from "@/lib/types";
-
-const navItems = [
-  { href: "/app/daily", label: "Daily" },
-  { href: "/app/weekly", label: "Weekly" },
-  { href: "/app/monthly", label: "Monthly" },
-  { href: "/app/yearly", label: "Yearly" },
-  { href: "/app/quick-tasks", label: "Quick Tasks" },
-  { href: "/app/focus", label: "Focus Mode" },
-];
 
 export default function Sidebar({
   projects,
@@ -29,9 +21,19 @@ export default function Sidebar({
   onNavigate?: () => void;
   onClose?: () => void;
 }) {
+  const t = useTranslations("nav");
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+
+  const navItems = [
+    { href: "/app/daily", label: t("daily") },
+    { href: "/app/weekly", label: t("weekly") },
+    { href: "/app/monthly", label: t("monthly") },
+    { href: "/app/yearly", label: t("yearly") },
+    { href: "/app/quick-tasks", label: t("quickTasks") },
+    { href: "/app/focus", label: t("focusMode") },
+  ];
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -77,11 +79,11 @@ export default function Sidebar({
       </nav>
 
       <div className="text-xs font-medium uppercase tracking-wide text-inkMuted mb-2">
-        Projects
+        {t("projects")}
       </div>
       <div className="space-y-1 mb-3 flex-1 overflow-y-auto overflow-x-visible">
         {projects.length === 0 && (
-          <p className="text-xs text-inkMuted px-3">No projects yet</p>
+          <p className="text-xs text-inkMuted px-3">{t("noProjects")}</p>
         )}
         {projects.map((p) => (
           <Link
@@ -103,8 +105,12 @@ export default function Sidebar({
         onClick={onNavigate}
         className="text-sm px-3 py-2 rounded-lg border border-dashed border-line text-inkMuted text-center mb-4 hover:border-accent hover:text-accentLight transition-colors"
       >
-        + New Project
+        {t("newProject")}
       </Link>
+
+      <div className="mb-3">
+        <LanguageSwitcher />
+      </div>
 
       <div className="border-t border-line pt-3 mt-1 space-y-1">
         <Link
@@ -116,7 +122,7 @@ export default function Sidebar({
               : "text-inkMuted hover:bg-surfaceHover hover:text-ink"
           }`}
         >
-          Settings
+          {t("settings")}
         </Link>
         <Link
           href="/app/billing"
@@ -127,13 +133,13 @@ export default function Sidebar({
               : "text-inkMuted hover:bg-surfaceHover hover:text-ink"
           }`}
         >
-          Billing
+          {t("billing")}
         </Link>
         <button
           onClick={handleLogout}
           className="w-full text-left text-sm px-3 py-2 rounded-lg text-inkMuted hover:bg-red-500/10 hover:text-red-400 transition-colors"
         >
-          Log out
+          {t("logout")}
         </button>
       </div>
     </aside>

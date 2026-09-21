@@ -59,6 +59,6 @@ export async function addComment(input: {
     }
   }
 
-  revalidatePath(`/projects/${input.projectId}`);
+  revalidatePath("/[locale]/projects", "layout");
   return comment;
 }

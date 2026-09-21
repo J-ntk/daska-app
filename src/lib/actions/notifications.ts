@@ -11,5 +11,5 @@ export async function markAllNotificationsRead() {
   if (!user) return;
 
   await supabase.from("notifications").update({ read: true }).eq("user_id", user.id).eq("read", false);
-  revalidatePath("/app", "layout");
+  revalidatePath("/[locale]/app", "layout");
 }

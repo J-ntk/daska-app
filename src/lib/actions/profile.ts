@@ -28,7 +28,17 @@ export async function updateProfile(input: {
     .eq("id", user.id);
 
   if (error) throw new Error(error.message);
-  revalidatePath("/app/settings");
+  revalidatePath("/[locale]/app/settings", "layout");
+}
+
+export async function updateLanguage(language: string) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.from("profiles").update({ language }).eq("id", user.id);
 }
 
 export async function changeEmail(newEmail: string) {

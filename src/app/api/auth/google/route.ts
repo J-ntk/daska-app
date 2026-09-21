@@ -8,11 +8,17 @@ export async function GET(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/en/login", request.url));
   }
 
   if (!process.env.GOOGLE_CLIENT_ID) {
-    return NextResponse.redirect(new URL("/app/settings?google=error", request.url));
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("language")
+      .eq("id", user.id)
+      .maybeSingle();
+    const locale = profile?.language ?? "en";
+    return NextResponse.redirect(new URL(`/${locale}/app/settings?google=error`, request.url));
   }
 
   const redirectUri = new URL("/api/auth/google/callback", request.url).toString();

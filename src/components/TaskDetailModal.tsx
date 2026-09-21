@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { addComment } from "@/lib/actions/comments";
 import { createClient } from "@/lib/supabase/client";
 import type { Comment, Task } from "@/lib/types";
@@ -14,7 +14,7 @@ export default function TaskDetailModal({
 }: {
   task: Task;
   projectId: string | null;
-  memberHints?: string[];
+  memberHints?: string[]; // e.g. ["ivan", "alex.k"] — shown as a hint for @mentions
   trigger: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);

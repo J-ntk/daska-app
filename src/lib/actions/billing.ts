@@ -14,6 +14,9 @@ export async function startCheckout(
   planType: "monthly" | "yearly" | "lifetime",
   locale: string
 ) {
+  // Guard first, before touching Stripe or Supabase at all — if this ever
+  // gets called before Stripe is configured, fail gracefully back to the
+  // Billing page instead of crashing with an unhandled error.
   if (!process.env.STRIPE_SECRET_KEY || !PRICE_IDS[planType]) {
     redirect(`/${locale}/app/billing?error=not_configured`);
   }
