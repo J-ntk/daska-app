@@ -21,19 +21,19 @@ export default function AppShell({
   return (
     <div className="md:flex min-h-screen">
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-30 flex items-center justify-between border-b border-line bg-surface/90 backdrop-blur px-4 h-14">
-        <div className="flex items-center gap-2">
-          <Image src="/icons/icon-192.png" alt="" width={24} height={24} className="rounded-md" />
-          <span className="font-display font-semibold text-sm">Daska</span>
+      <div className="md:hidden fixed top-0 inset-x-0 z-30 flex items-center justify-between border-b border-line bg-surface/90 backdrop-blur px-4 h-16">
+        <div className="flex items-center gap-2.5">
+          <Image src="/icons/icon-192.png" alt="" width={32} height={32} className="rounded-lg" />
+          <span className="font-display font-semibold text-base">Daska</span>
         </div>
         <button
           onClick={() => setOpen(true)}
           aria-label="Open menu"
-          className="relative w-9 h-9 flex items-center justify-center rounded-lg border border-line text-ink"
+          className="relative w-10 h-10 flex items-center justify-center rounded-lg border border-line text-ink text-lg"
         >
           ☰
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-accentLight" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accentLight" />
           )}
         </button>
       </div>
@@ -62,7 +62,7 @@ export default function AppShell({
       </div>
 
       <div className="flex-1 min-w-0">
-        <main className="p-5 pt-20 md:pt-8 md:p-8 max-w-6xl mx-auto">{children}</main>
+        <main className="p-5 pt-24 md:pt-8 md:p-8 max-w-6xl mx-auto">{children}</main>
       </div>
     </div>
   );

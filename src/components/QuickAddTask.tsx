@@ -49,6 +49,10 @@ export default function QuickAddTask({
         onChange={(e) => setTitle(e.target.value)}
         placeholder={placeholder}
         disabled={isPending}
+        // Mobile keyboards don't always trigger a form's implicit submit on
+        // Enter/Go without a real submit control present — the button below
+        // covers that, this just labels the key nicely when it does work.
+        enterKeyHint="done"
         className="flex-1 min-w-0 border border-line rounded-lg px-3 py-2 text-sm bg-surface disabled:opacity-50"
       />
       {allowRepeat && (
@@ -64,6 +68,14 @@ export default function QuickAddTask({
           <option value="monthly">Monthly</option>
         </select>
       )}
+      <button
+        type="submit"
+        disabled={isPending || !title.trim()}
+        aria-label="Add task"
+        className="shrink-0 w-9 flex items-center justify-center bg-gradient-to-b from-accentLight to-accent text-white rounded-lg shadow-glow hover:brightness-110 transition-[filter] text-lg font-medium disabled:opacity-40"
+      >
+        +
+      </button>
     </form>
   );
 }

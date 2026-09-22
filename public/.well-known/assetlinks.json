@@ -1,8 +1,12 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "app.vercel.daska_app_eight.twa",
-        "sha256_cert_fingerprints": ["4F:9D:2D:59:43:2F:93:25:4E:45:7F:91:6E:D2:82:A7:DA:8E:E6:5C:85:3C:94:14:26:B4:AE:4C:FB:A8:13:2D"]
-      }
-    }]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "site.daska.app",
+      "sha256_cert_fingerprints": [
+        "4D:CE:97:65:72:37:11:37:A3:73:A3:1E:9E:28:B5:13:A9:44:32:29:58:24:19:79:50:84:C1:AB:33:9C:4C:24"
+      ]
+    }
+  }
+]
