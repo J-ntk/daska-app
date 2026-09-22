@@ -7,16 +7,18 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://daska.site',
     cleartext: false,
-    // Hosts Capacitor treats as "part of the app" and loads inside its own
-    // WebView. Anything not listed here gets handed to the system browser
-    // instead — which is what was happening to daska.site itself if any
-    // redirect (even internal) resolved to a host not on this list.
     allowNavigation: [
       'daska.site',
       'www.daska.site',
-      '*.supabase.co',       // Supabase auth/session endpoints
-      'accounts.google.com', // Google sign-in
+      '*.supabase.co',
+      'accounts.google.com',
     ],
+  },
+  plugins: {
+    SystemBars: {
+      // Light (white) icons, appropriate for Daska's dark background.
+      style: 'LIGHT',
+    },
   },
 };
 

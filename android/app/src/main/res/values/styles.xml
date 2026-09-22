@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- AppTheme replaces the base application theme -->
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <!-- Match both system bars to the app's dark background instead of
-             Android's default light gray -->
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
-        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
-        <!-- Dark background needs light (white) icons/text in the status
-             bar and nav bar, not the dark ones Android shows by default -->
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
+        <!-- Android's default window background is a plain gray
+             (0xff303030). It shows through in any gap the WebView
+             doesn't cover — around system bar insets, before content
+             loads — so it needs to be our own dark background instead. -->
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="AppTheme.NoActionBarLaunch" parent="AppTheme">
-        <item name="android:background">@color/colorPrimaryDark</item>
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:background">@null</item>
+    </style>
+
+    <!-- This is the theme the running activity actually uses (see
+         AndroidManifest.xml), not just the launch splash — so the
+         window background needs to be set here too, not only on
+         AppTheme above. -->
+    <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
+        <item name="android:background">@drawable/splash</item>
+        <item name="android:windowBackground">@color/colorPrimaryDark</item>
     </style>
 </resources>
