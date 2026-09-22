@@ -2,7 +2,8 @@
 
 import { usePathname, Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Sun, CalendarDays, Folder, Menu } from "lucide-react";
+import { Sun, CalendarDays, Plus, Folder, Menu } from "lucide-react";
+import { playTap } from "@/lib/sound";
 
 export default function BottomTabBar({
   onProjectsClick,
@@ -13,6 +14,7 @@ export default function BottomTabBar({
 }) {
   const pathname = usePathname();
   const t = useTranslations("nav");
+  const quickTasksActive = pathname === "/app/quick-tasks";
 
   const linkTabs = [
     { href: "/app/daily", label: t("daily"), Icon: Sun },
@@ -30,6 +32,7 @@ export default function BottomTabBar({
           <Link
             key={href}
             href={href}
+            onClick={playTap}
             className={`flex-1 flex flex-col items-center justify-center gap-1 py-2.5 ${
               active ? "text-accentLight" : "text-inkMuted"
             }`}
@@ -40,8 +43,32 @@ export default function BottomTabBar({
         );
       })}
 
+      {/* Quick Tasks gets the raised center button — the whole point of
+          that page is speed, so it earns the most prominent spot. */}
+      <Link
+        href="/app/quick-tasks"
+        onClick={playTap}
+        className="flex-1 flex flex-col items-center gap-1 py-2.5 text-inkMuted"
+      >
+        <span
+          className={`w-12 h-12 -mt-6 rounded-full flex items-center justify-center text-white shadow-glow transition-[filter] ${
+            quickTasksActive
+              ? "bg-gradient-to-b from-accentLight to-accent brightness-110"
+              : "bg-gradient-to-b from-accentLight to-accent hover:brightness-110"
+          }`}
+        >
+          <Plus size={24} aria-hidden="true" />
+        </span>
+        <span className={`text-[11px] ${quickTasksActive ? "text-accentLight font-medium" : ""}`}>
+          {t("quickTasks")}
+        </span>
+      </Link>
+
       <button
-        onClick={onProjectsClick}
+        onClick={() => {
+          playTap();
+          onProjectsClick();
+        }}
         className="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-inkMuted"
       >
         <Folder size={20} aria-hidden="true" />
@@ -49,7 +76,10 @@ export default function BottomTabBar({
       </button>
 
       <button
-        onClick={onMoreClick}
+        onClick={() => {
+          playTap();
+          onMoreClick();
+        }}
         className="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-inkMuted"
       >
         <Menu size={20} aria-hidden="true" />

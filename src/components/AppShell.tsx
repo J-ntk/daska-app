@@ -2,10 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
+import { usePathname, Link } from "@/i18n/navigation";
+import { Focus } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import BottomTabBar from "@/components/BottomTabBar";
 import NotificationsBell from "@/components/NotificationsBell";
 import ProjectSwitcherModal from "@/components/ProjectSwitcherModal";
+import { playTap } from "@/lib/sound";
 import type { Project, Notification } from "@/lib/types";
 
 // Header/tab-bar heights (excluding safe-area insets) stay constant; the
@@ -27,6 +31,9 @@ export default function AppShell({
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [projectSwitcherOpen, setProjectSwitcherOpen] = useState(false);
+  const pathname = usePathname();
+  const t = useTranslations("nav");
+  const focusActive = pathname === "/app/focus";
 
   return (
     <div className="md:flex min-h-screen">
@@ -47,7 +54,21 @@ export default function AppShell({
           <Image src="/icons/icon-192.png" alt="" width={32} height={32} className="rounded-lg" />
           <span className="font-display font-semibold text-base">Daska</span>
         </div>
-        <NotificationsBell notifications={notifications} unreadCount={unreadCount} variant="compact" />
+        <div className="flex items-center gap-2">
+          <Link
+            href="/app/focus"
+            onClick={playTap}
+            aria-label={t("focusMode")}
+            className={`w-9 h-9 flex items-center justify-center rounded-lg corner-fix border transition-colors ${
+              focusActive
+                ? "border-accent text-accentLight bg-accent/10"
+                : "border-line text-ink hover:border-accent"
+            }`}
+          >
+            <Focus size={18} aria-hidden="true" />
+          </Link>
+          <NotificationsBell notifications={notifications} unreadCount={unreadCount} variant="compact" />
+        </div>
       </div>
 
       {/* Drawer backdrop */}

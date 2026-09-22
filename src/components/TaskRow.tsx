@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { setTaskStatus, deleteTask } from "@/lib/actions/tasks";
 import { syncTaskToCalendar } from "@/lib/actions/calendar";
+import { playTap } from "@/lib/sound";
 import type { Task } from "@/lib/types";
 
 const priorityColor: Record<string, string> = {
@@ -23,6 +24,7 @@ export default function TaskRow({
   const done = task.status === "done";
 
   function toggle() {
+    playTap();
     startTransition(() => setTaskStatus(task.id, done ? "todo" : "done"));
   }
 
