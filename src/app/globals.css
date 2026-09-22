@@ -94,3 +94,15 @@ select {
   -webkit-mask-image: -webkit-radial-gradient(white, black);
   mask-image: radial-gradient(white, black);
 }
+
+/* Android's status bar and gesture nav bar are now transparent (see
+   MainActivity.java), so the app's own dark background draws all the way
+   to the physical screen edges. These keep actual content — the mobile
+   header's icon/text, the sidebar drawer's top — clear of the notch,
+   clock and gesture bar, without leaving a visible gap in the background
+   color itself. env(safe-area-inset-*) is 0 in a normal desktop/mobile
+   browser, so this has no effect outside the Android app. */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}

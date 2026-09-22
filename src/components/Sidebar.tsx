@@ -42,7 +42,14 @@ export default function Sidebar({
   }
 
   return (
-    <aside className="w-64 md:w-56 shrink-0 border-r border-line bg-surface h-full md:min-h-screen p-4 flex flex-col overflow-visible shadow-2xl md:shadow-none">
+    <aside
+      className="w-64 md:w-56 shrink-0 border-r border-line bg-surface h-full md:min-h-screen p-4 flex flex-col overflow-visible shadow-2xl md:shadow-none"
+      // As a fixed full-height drawer on mobile, this panel reaches the
+      // very top of the screen, so its own top padding needs the same
+      // safe-area clearance as the mobile header. --safe-top is 0 on
+      // desktop/normal browsers, so this is harmless there.
+      style={{ paddingTop: "calc(1rem + var(--safe-top))" }}
+    >
       <div className="flex items-center justify-between mb-6 pb-3 border-b border-line">
         <div className="flex items-center gap-2">
           <Image src="/icons/icon-192.png" alt="" width={26} height={26} className="rounded-md shrink-0" />
