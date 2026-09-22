@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/getUser";
 import type { Project, Notification } from "@/lib/types";
 
 type Db = ReturnType<typeof createClient>;
@@ -44,25 +45,28 @@ async function loadFeed(supabase: Db, userId: string, limit: number): Promise<No
 
 export async function getShellData() {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
 
   let projects: Project[] = [];
   let notifications: Notification[] = [];
 
   if (user) {
-    const { data: memberships } = await supabase
-      .from("project_members")
-      .select("project:projects(*)")
-      .eq("user_id", user.id)
-      .eq("status", "active");
+    // Memberships and the notification/invite feed are independent —
+    // run them concurrently instead of one after another.
+    const [{ data: memberships }, feed] = await Promise.all([
+      supabase
+        .from("project_members")
+        .select("project:projects(*)")
+        .eq("user_id", user.id)
+        .eq("status", "active"),
+      loadFeed(supabase, user.id, 15),
+    ]);
 
     projects = (memberships ?? [])
       .map((m: any) => m.project)
       .filter(Boolean) as Project[];
 
-    notifications = await loadFeed(supabase, user.id, 15);
+    notifications = feed;
   }
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -73,9 +77,7 @@ export async function getShellData() {
 // Full list for the notifications page.
 export async function getNotificationsFeed(limit = 100): Promise<Notification[]> {
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   if (!user) return [];
   return loadFeed(supabase, user.id, limit);
 }
