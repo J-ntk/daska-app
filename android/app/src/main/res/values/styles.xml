@@ -7,11 +7,12 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <!-- Android's default window background is a plain gray
-             (0xff303030). It shows through in any gap the WebView
-             doesn't cover — around system bar insets, before content
-             loads — so it needs to be our own dark background instead. -->
         <item name="android:windowBackground">@color/colorPrimaryDark</item>
+        <!-- Android automatically dims/scrims system bars for legibility
+             contrast (API 29+) — that's likely why our navy is coming
+             through as a darker gray instead of the actual color. -->
+        <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">
@@ -21,11 +22,11 @@
     </style>
 
     <!-- This is the theme the running activity actually uses (see
-         AndroidManifest.xml), not just the launch splash — so the
-         window background needs to be set here too, not only on
-         AppTheme above. -->
+         AndroidManifest.xml), not just the launch splash. -->
     <style name="AppTheme.NoActionBarLaunch" parent="Theme.SplashScreen">
         <item name="android:background">@drawable/splash</item>
         <item name="android:windowBackground">@color/colorPrimaryDark</item>
+        <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 </resources>
