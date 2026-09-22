@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Sidebar from "@/components/Sidebar";
 import BottomTabBar from "@/components/BottomTabBar";
 import NotificationsBell from "@/components/NotificationsBell";
+import ProjectSwitcherModal from "@/components/ProjectSwitcherModal";
 import type { Project, Notification } from "@/lib/types";
 
 // Header/tab-bar heights (excluding safe-area insets) stay constant; the
@@ -24,28 +25,17 @@ export default function AppShell({
   unreadCount: number;
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
-  const projectsSectionRef = useRef<HTMLDivElement>(null);
-
-  function openDrawer(focusProjects = false) {
-    setOpen(true);
-    if (focusProjects) {
-      // Wait for the drawer's open transition to start before scrolling,
-      // so scrollIntoView has a laid-out element to target.
-      requestAnimationFrame(() => {
-        projectsSectionRef.current?.scrollIntoView({ block: "start" });
-      });
-    }
-  }
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [projectSwitcherOpen, setProjectSwitcherOpen] = useState(false);
 
   return (
     <div className="md:flex min-h-screen">
       {/* Mobile top bar — background extends behind the transparent status
           bar/notch; the padding-top keeps the icon/text clear of it. This
           whole element is md:hidden, so its inline style never applies on
-          desktop. The hamburger is gone: Projects/More on the bottom tab
-          bar now open this same drawer, and notifications live here
-          instead of buried inside it. */}
+          desktop. The hamburger is gone: Projects opens a project-switcher
+          popup and More opens this drawer instead, and notifications live
+          here rather than buried inside the drawer. */}
       <div
         className="md:hidden fixed top-0 inset-x-0 z-30 flex items-center justify-between border-b border-line bg-surface/90 backdrop-blur px-4"
         style={{
@@ -57,31 +47,30 @@ export default function AppShell({
           <Image src="/icons/icon-192.png" alt="" width={32} height={32} className="rounded-lg" />
           <span className="font-display font-semibold text-base">Daska</span>
         </div>
-        <NotificationsBell notifications={notifications} unreadCount={unreadCount} />
+        <NotificationsBell notifications={notifications} unreadCount={unreadCount} variant="compact" />
       </div>
 
-      {/* Backdrop */}
-      {open && (
+      {/* Drawer backdrop */}
+      {drawerOpen && (
         <div
-          onClick={() => setOpen(false)}
+          onClick={() => setDrawerOpen(false)}
           className="md:hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-40"
         />
       )}
 
       {/* Sidebar: fixed drawer on mobile (opened via the bottom tab bar's
-          Projects/More buttons), static column on desktop */}
+          More button), static column on desktop */}
       <div
         className={`fixed md:static top-0 left-0 z-50 h-full md:shrink-0 transition-transform duration-200 ease-out ${
-          open ? "translate-x-0" : "-translate-x-full"
+          drawerOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0`}
       >
         <Sidebar
           projects={projects}
           notifications={notifications}
           unreadCount={unreadCount}
-          onNavigate={() => setOpen(false)}
-          onClose={() => setOpen(false)}
-          projectsSectionRef={projectsSectionRef}
+          onNavigate={() => setDrawerOpen(false)}
+          onClose={() => setDrawerOpen(false)}
         />
       </div>
 
@@ -103,7 +92,19 @@ export default function AppShell({
         </main>
       </div>
 
-      <BottomTabBar onOpenDrawer={openDrawer} />
+      <BottomTabBar
+        onProjectsClick={() => setProjectSwitcherOpen(true)}
+        onMoreClick={() => setDrawerOpen(true)}
+      />
+
+      {/* Works from any page — tap Projects on the tab bar, pick a
+          project, land straight on it regardless of where you started. */}
+      {projectSwitcherOpen && (
+        <ProjectSwitcherModal
+          projects={projects}
+          onClose={() => setProjectSwitcherOpen(false)}
+        />
+      )}
     </div>
   );
 }
