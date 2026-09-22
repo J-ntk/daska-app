@@ -3,6 +3,7 @@ import { disconnectGoogleCalendar } from "@/lib/actions/calendar";
 import AiSettingsForm from "@/components/AiSettingsForm";
 import ProfileSettingsForm from "@/components/ProfileSettingsForm";
 import AccountSettingsForm from "@/components/AccountSettingsForm";
+import PushNotificationSettings from "@/components/PushNotificationSettings";
 
 export default async function SettingsPage({
   searchParams,
@@ -69,6 +70,11 @@ export default async function SettingsPage({
       <div className="mb-3 text-xs font-medium uppercase text-ink/40">Account</div>
       <div className="border border-line rounded-lg p-4 bg-surface mb-6">
         <AccountSettingsForm currentEmail={user.email ?? ""} />
+      </div>
+
+      <div className="mb-3 text-xs font-medium uppercase text-ink/40">Notifications</div>
+      <div className="border border-line rounded-lg p-4 bg-surface mb-6">
+        <PushNotificationSettings />
       </div>
 
       <div className="mb-3 text-xs font-medium uppercase text-ink/40">Calendar</div>
