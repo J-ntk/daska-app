@@ -10,30 +10,48 @@ import { registerPushToken } from "@/lib/actions/push";
 export default function PushRegistration() {
   useEffect(() => {
     const capacitor = (window as any).Capacitor;
-    if (!capacitor?.isNativePlatform?.()) return;
+    if (!capacitor?.isNativePlatform?.()) {
+      console.log("[push] not running in the native app — skipping registration");
+      return;
+    }
 
     let cancelled = false;
 
     (async () => {
-      const { PushNotifications } = await import("@capacitor/push-notifications");
+      try {
+        const { PushNotifications } = await import("@capacitor/push-notifications");
 
-      const perm = await PushNotifications.checkPermissions();
-      let granted = perm.receive === "granted";
-      if (!granted && perm.receive !== "denied") {
-        const req = await PushNotifications.requestPermissions();
-        granted = req.receive === "granted";
+        const perm = await PushNotifications.checkPermissions();
+        console.log("[push] current permission state:", perm.receive);
+
+        let granted = perm.receive === "granted";
+        if (!granted && perm.receive !== "denied") {
+          const req = await PushNotifications.requestPermissions();
+          console.log("[push] permission request result:", req.receive);
+          granted = req.receive === "granted";
+        }
+
+        if (!granted) {
+          console.log("[push] permission not granted — stopping");
+          return;
+        }
+        if (cancelled) return;
+
+        await PushNotifications.register();
+        console.log("[push] register() called, waiting for token…");
+
+        PushNotifications.addListener("registration", async (token) => {
+          console.log("[push] got device token, saving it");
+          const result = await registerPushToken(token.value, "android");
+          console.log("[push] registerPushToken result:", result);
+        });
+
+        PushNotifications.addListener("registrationError", (err) => {
+          console.error("[push] registration error", err);
+        });
+      } catch (err) {
+        console.error("[push] setup threw an error", err);
       }
-      if (!granted || cancelled) return;
-
-      await PushNotifications.register();
-
-      PushNotifications.addListener("registration", (token) => {
-        registerPushToken(token.value, "android");
-      });
-
-      PushNotifications.addListener("registrationError", (err) => {
-        console.error("Push registration error", err);
-      });
     })();
 
     return () => {
