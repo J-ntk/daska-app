@@ -83,3 +83,14 @@ select {
   background-color: #131928;
   color: #E8EBF3;
 }
+
+/* Fixes a known Android WebView/Chromium bug where rounded-corner elements
+   with a background color or border show small triangular "notches" at
+   the corners, most visible on real devices. Forcing a mask-based render
+   path makes the corners anti-alias correctly instead. Likely made worse
+   here by the large, continuously animating blurred blobs above (body::
+   before/after), which keep the GPU compositor busy behind everything. */
+.corner-fix {
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+}
