@@ -5,8 +5,6 @@ import { routing } from "@/i18n/routing";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-// Strips a leading /xx locale segment (e.g. "/en/app/daily" -> "/app/daily")
-// so the auth logic below can reason about paths the same way it always did.
 function stripLocale(pathname: string): string {
   const match = pathname.match(/^\/([a-z]{2})(\/.*)?$/);
   if (match && routing.locales.includes(match[1] as any)) {
@@ -16,7 +14,6 @@ function stripLocale(pathname: string): string {
 }
 
 export async function middleware(request: NextRequest) {
-  // Static assets bypass everything — no locale handling, no auth check.
   const isStaticAsset =
     /\.(json|js|ico|png|jpg|jpeg|svg|webp|txt|xml|webmanifest)$/.test(
       request.nextUrl.pathname
@@ -26,12 +23,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next({ request });
   }
 
-  // Let next-intl figure out/redirect to the right locale first.
   const intlResponse = intlMiddleware(request);
 
-  // If next-intl decided to redirect (e.g. "/" -> "/en/"), just send that
-  // back immediately — middleware will run again on the redirected URL,
-  // and the auth check below will happen on that next pass instead.
   if (intlResponse.status === 307 || intlResponse.status === 308) {
     return intlResponse;
   }
@@ -58,9 +51,15 @@ export async function middleware(request: NextRequest) {
     }
   );
 
+  // getSession() reads the JWT straight from the cookie — no network call
+  // unless the token has actually expired. getUser() (used everywhere
+  // else, in pages and server actions) still re-verifies with Supabase's
+  // server for real security on actual data access; this is only the
+  // fast routing gate that decides whether to redirect to /login.
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
 
   const pathWithoutLocale = stripLocale(request.nextUrl.pathname);
   const localeMatch = request.nextUrl.pathname.match(/^\/([a-z]{2})(\/|$)/);
@@ -72,8 +71,6 @@ export async function middleware(request: NextRequest) {
 
   const isPublicPage =
     isAuthPage ||
-    pathWithoutLocale.startsWith("/forgot-password") ||
-    pathWithoutLocale.startsWith("/reset-password") ||
     pathWithoutLocale.startsWith("/privacy") ||
     pathWithoutLocale.startsWith("/terms");
 
