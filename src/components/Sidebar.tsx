@@ -21,9 +21,6 @@ export default function Sidebar({
   unreadCount: number;
   onNavigate?: () => void;
   onClose?: () => void;
-  // Lets the mobile bottom tab bar's "Projects" button scroll straight to
-  // this section when it opens the drawer, instead of always landing at
-  // the top. Optional — desktop doesn't pass it.
   projectsSectionRef?: React.RefObject<HTMLDivElement>;
 }) {
   const t = useTranslations("nav");
@@ -48,11 +45,13 @@ export default function Sidebar({
 
   return (
     <aside
-      className="w-64 md:w-56 shrink-0 border-r border-line bg-surface h-full md:min-h-screen p-4 flex flex-col overflow-visible shadow-2xl md:shadow-none overflow-y-auto"
-      // As a fixed full-height drawer on mobile, this panel reaches the
-      // very top of the screen, so its own top padding needs the same
-      // safe-area clearance as the mobile header. --safe-top is 0 on
-      // desktop/normal browsers, so this is harmless there.
+      // overflow-visible only — this element must NOT also have
+      // overflow-y-auto, or it clips the notifications dropdown, which is
+      // positioned absolutely relative to a spot inside it and needs to
+      // extend beyond these bounds to render fully. The Projects list
+      // below has its own dedicated overflow-y-auto for scrolling just
+      // that section — that's the correct, separate scroll container.
+      className="w-64 md:w-56 shrink-0 border-r border-line bg-surface h-full md:min-h-screen p-4 flex flex-col overflow-visible shadow-2xl md:shadow-none"
       style={{ paddingTop: "calc(1rem + var(--safe-top))" }}
     >
       <div className="flex items-center justify-between mb-6 pb-3 border-b border-line">
@@ -71,10 +70,6 @@ export default function Sidebar({
         )}
       </div>
 
-      {/* Still shown here for the static desktop column, which has no
-          separate top bar of its own. On mobile the bell now lives in
-          AppShell's top bar; it stays here too so it's not lost if
-          someone opens the drawer directly — harmless duplication. */}
       <NotificationsBell notifications={notifications} unreadCount={unreadCount} />
 
       <nav className="space-y-1.5 mb-6">

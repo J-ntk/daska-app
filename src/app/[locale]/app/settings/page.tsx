@@ -4,6 +4,7 @@ import AiSettingsForm from "@/components/AiSettingsForm";
 import ProfileSettingsForm from "@/components/ProfileSettingsForm";
 import AccountSettingsForm from "@/components/AccountSettingsForm";
 import PushNotificationSettings from "@/components/PushNotificationSettings";
+import DeleteAccountSection from "@/components/DeleteAccountSection";
 
 export default async function SettingsPage({
   searchParams,
@@ -107,12 +108,17 @@ export default async function SettingsPage({
       </div>
 
       <div className="mb-3 text-xs font-medium uppercase text-ink/40">AI Task Breakdown</div>
-      <div className="border border-line rounded-lg p-4 bg-surface">
+      <div className="border border-line rounded-lg p-4 bg-surface mb-6">
         <p className="text-xs text-ink/50 mb-3">
           Connect any AI provider you like — OpenAI, Anthropic, OpenRouter, Groq, or a local
           Ollama server. Nothing is added on our side, so this stays free and it&apos;s your choice.
         </p>
         <AiSettingsForm connected={aiSettings ?? null} />
+      </div>
+
+      <div className="mb-3 text-xs font-medium uppercase text-red-400/70">Danger zone</div>
+      <div className="border border-red-500/20 rounded-lg p-4 bg-surface">
+        <DeleteAccountSection />
       </div>
     </div>
   );
