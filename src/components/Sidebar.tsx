@@ -81,7 +81,12 @@ export default function Sidebar({
       <div className="text-xs font-medium uppercase tracking-wide text-inkMuted mb-2">
         {t("projects")}
       </div>
-      <div className="space-y-1 mb-3 flex-1 overflow-y-auto overflow-x-visible">
+      {/* -mx-1.5 px-1.5: an element with overflow-y-auto forces overflow-x
+          to behave the same way (the two can't differ per the CSS spec),
+          so the selected item's shadow-glow was getting clipped right at
+          the container edge. This gives it a little room without shifting
+          the sidebar's visible width. */}
+      <div className="space-y-1 mb-3 flex-1 overflow-y-auto -mx-1.5 px-1.5">
         {projects.length === 0 && (
           <p className="text-xs text-inkMuted px-3">{t("noProjects")}</p>
         )}
