@@ -11,6 +11,7 @@ export default function QuickAddTask({
   quarter,
   placeholder = "Add a task and press Enter…",
   allowRepeat = false,
+  compact = false,
 }: {
   horizon: Horizon;
   projectId?: string | null;
@@ -18,6 +19,10 @@ export default function QuickAddTask({
   quarter?: string | null;
   placeholder?: string;
   allowRepeat?: boolean;
+  // Tight spaces (e.g. a ~150px-wide weekly day column) need a smaller
+  // button and, critically, a background that actually contrasts with
+  // the surrounding card instead of matching it exactly.
+  compact?: boolean;
 }) {
   const [title, setTitle] = useState("");
   const [repeat, setRepeat] = useState<RecurrenceRule>(null);
@@ -43,23 +48,22 @@ export default function QuickAddTask({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-3 flex gap-1.5">
+    <form onSubmit={handleSubmit} className={`flex gap-1.5 ${compact ? "mb-2" : "mb-3"}`}>
       <input
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder={placeholder}
         disabled={isPending}
-        // Mobile keyboards don't always trigger a form's implicit submit on
-        // Enter/Go without a real submit control present — the button below
-        // covers that, this just labels the key nicely when it does work.
         enterKeyHint="done"
-        className="flex-1 min-w-0 border border-line rounded-lg px-3 py-2 text-sm bg-surface disabled:opacity-50"
+        className={`flex-1 min-w-0 border border-line rounded-lg corner-fix bg-bg disabled:opacity-50 ${
+          compact ? "px-2 py-1.5 text-xs" : "px-3 py-2 text-sm"
+        }`}
       />
       {allowRepeat && (
         <select
           value={repeat ?? ""}
           onChange={(e) => setRepeat((e.target.value || null) as RecurrenceRule)}
-          className="border border-line rounded-lg text-xs px-1.5 bg-surface shrink-0"
+          className="border border-line rounded-lg corner-fix text-xs px-1.5 bg-bg shrink-0"
           title="Repeat"
         >
           <option value="">No repeat</option>
@@ -72,7 +76,9 @@ export default function QuickAddTask({
         type="submit"
         disabled={isPending || !title.trim()}
         aria-label="Add task"
-        className="shrink-0 w-9 flex items-center justify-center bg-gradient-to-b from-accentLight to-accent text-white rounded-lg shadow-glow hover:brightness-110 transition-[filter] text-lg font-medium disabled:opacity-40"
+        className={`shrink-0 flex items-center justify-center bg-gradient-to-b from-accentLight to-accent text-white rounded-lg corner-fix shadow-glow hover:brightness-110 transition-[filter] font-medium disabled:opacity-40 ${
+          compact ? "w-6 text-sm" : "w-9 text-lg"
+        }`}
       >
         +
       </button>

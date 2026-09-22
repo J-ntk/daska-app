@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Sidebar from "@/components/Sidebar";
+import PushRegistration from "@/components/PushRegistration";
 import type { Project, Notification } from "@/lib/types";
 
 // Header height (excluding the notch/status bar) stays a constant 4rem;
@@ -25,6 +26,11 @@ export default function AppShell({
 
   return (
     <div className="md:flex min-h-screen">
+      {/* Registers this device for push notifications when running inside
+          the native Android app; renders nothing and is a no-op in a
+          normal browser tab. */}
+      <PushRegistration />
+
       {/* Mobile top bar — background extends behind the transparent status
           bar/notch; the padding-top keeps the icon/text clear of it. This
           whole element is md:hidden, so its inline style never applies on

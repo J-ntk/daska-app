@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "989377762843",
+    "project_id": "daska-aba1e",
+    "storage_bucket": "daska-aba1e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:989377762843:android:c111bec0e87a139888cabe",
+        "android_client_info": {
+          "package_name": "site.daska.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNsZm6QhFgmldSdpoWmNUUf7Qx2gtzvd0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

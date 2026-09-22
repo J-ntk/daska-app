@@ -46,7 +46,7 @@ export default async function WeeklyPage() {
 
       <div className="flex gap-2 overflow-x-auto md:grid md:grid-cols-7 md:overflow-visible -mx-5 px-5 md:mx-0 md:px-0">
         {days.map((day) => (
-          <div key={day.toISOString()} className="min-w-[150px] md:min-w-0">
+          <div key={day.toISOString()} className="min-w-[180px] md:min-w-0">
             <WeekDayColumn
               dateLabel={format(day, "EEE d")}
               dateValue={format(day, "yyyy-MM-dd")}

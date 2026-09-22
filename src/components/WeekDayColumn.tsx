@@ -34,12 +34,12 @@ export default function WeekDayColumn({
       }}
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
-      className={`border rounded-lg p-2 bg-surface min-h-[220px] transition-colors ${
+      className={`border rounded-lg corner-fix p-2 bg-surface min-h-[220px] transition-colors ${
         dragOver ? "border-accent bg-accent/5" : "border-line"
       } ${isPending ? "opacity-60" : ""}`}
     >
       <div className="text-xs font-semibold mb-2 border-b border-line pb-1.5">{dateLabel}</div>
-      <QuickAddTask horizon="weekly" dueDate={dateValue} placeholder="+ add" />
+      <QuickAddTask horizon="weekly" dueDate={dateValue} placeholder="Add…" compact />
       {tasks.map((t) => (
         <div
           key={t.id}
