@@ -15,12 +15,6 @@ const config: CapacitorConfig = {
     ],
   },
   android: {
-    // Known Capacitor bug on Android (still open, see
-    // ionic-team/capacitor#7269, #7454, #8429): window.Capacitor stays
-    // undefined on a remote page loaded via server.url, so no plugin
-    // (including push notifications) can be detected or used. Setting
-    // any non-empty appendUserAgent is a confirmed community workaround
-    // that gets the bridge injected correctly.
     appendUserAgent: 'DaskaApp',
   },
   plugins: {

@@ -42,17 +42,23 @@ export default function TaskRow({
 
   return (
     <div
-      className={`flex items-center gap-2 border border-line rounded-lg px-3 py-2 mb-1.5 bg-surface text-sm ${
+      className={`flex items-center gap-2 border border-line rounded-lg corner-fix px-3 py-2.5 mb-1.5 bg-surface text-sm ${
         isPending ? "opacity-50" : ""
       }`}
     >
+      {/* Slightly bigger than the visual checkmark needs, so it's a
+          comfortable tap target rather than a fiddly 16px dot. */}
       <button
         onClick={toggle}
         aria-label="Toggle done"
-        className={`w-4 h-4 rounded-md border shrink-0 ${
-          done ? "bg-accent border-accent" : "border-ink/40"
-        }`}
-      />
+        className="w-8 h-8 flex items-center justify-center shrink-0 -ml-1.5"
+      >
+        <span
+          className={`w-5 h-5 rounded-md border block ${
+            done ? "bg-accent border-accent" : "border-ink/40"
+          }`}
+        />
+      </button>
 
       <div className="flex-1 min-w-0 flex items-center gap-2">
         <span className={`truncate ${done ? "line-through text-ink/40" : ""}`}>
@@ -65,16 +71,16 @@ export default function TaskRow({
         )}
       </div>
 
-      <div className="flex items-center gap-1.5 shrink-0">
+      <div className="flex items-center gap-1 shrink-0">
         {projectName && (
-          <span className="text-[10px] border border-line rounded-lg px-2 py-0.5 text-ink/50">
+          <span className="text-[10px] border border-line rounded-lg corner-fix px-2 py-0.5 text-ink/50">
             {projectName}
           </span>
         )}
         {task.due_date && !task.google_event_id && (
           <button
             onClick={sync}
-            className="text-ink/30 hover:text-accent text-xs w-5 h-5 flex items-center justify-center"
+            className="text-ink/30 hover:text-accent text-sm w-8 h-8 flex items-center justify-center"
             aria-label="Sync to Google Calendar"
             title="Sync to Google Calendar"
           >
@@ -83,7 +89,7 @@ export default function TaskRow({
         )}
         <button
           onClick={remove}
-          className="text-ink/30 hover:text-red-400 text-xs w-5 h-5 flex items-center justify-center"
+          className="text-ink/30 hover:text-red-400 text-sm w-8 h-8 flex items-center justify-center"
           aria-label="Delete task"
         >
           ✕

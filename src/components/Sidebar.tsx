@@ -14,12 +14,17 @@ export default function Sidebar({
   unreadCount,
   onNavigate,
   onClose,
+  projectsSectionRef,
 }: {
   projects: Project[];
   notifications: Notification[];
   unreadCount: number;
   onNavigate?: () => void;
   onClose?: () => void;
+  // Lets the mobile bottom tab bar's "Projects" button scroll straight to
+  // this section when it opens the drawer, instead of always landing at
+  // the top. Optional — desktop doesn't pass it.
+  projectsSectionRef?: React.RefObject<HTMLDivElement>;
 }) {
   const t = useTranslations("nav");
   const pathname = usePathname();
@@ -43,7 +48,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className="w-64 md:w-56 shrink-0 border-r border-line bg-surface h-full md:min-h-screen p-4 flex flex-col overflow-visible shadow-2xl md:shadow-none"
+      className="w-64 md:w-56 shrink-0 border-r border-line bg-surface h-full md:min-h-screen p-4 flex flex-col overflow-visible shadow-2xl md:shadow-none overflow-y-auto"
       // As a fixed full-height drawer on mobile, this panel reaches the
       // very top of the screen, so its own top padding needs the same
       // safe-area clearance as the mobile header. --safe-top is 0 on
@@ -66,6 +71,10 @@ export default function Sidebar({
         )}
       </div>
 
+      {/* Still shown here for the static desktop column, which has no
+          separate top bar of its own. On mobile the bell now lives in
+          AppShell's top bar; it stays here too so it's not lost if
+          someone opens the drawer directly — harmless duplication. */}
       <NotificationsBell notifications={notifications} unreadCount={unreadCount} />
 
       <nav className="space-y-1.5 mb-6">
@@ -85,7 +94,7 @@ export default function Sidebar({
         ))}
       </nav>
 
-      <div className="text-xs font-medium uppercase tracking-wide text-inkMuted mb-2">
+      <div ref={projectsSectionRef} className="text-xs font-medium uppercase tracking-wide text-inkMuted mb-2">
         {t("projects")}
       </div>
       <div className="space-y-1 mb-3 flex-1 overflow-y-auto">

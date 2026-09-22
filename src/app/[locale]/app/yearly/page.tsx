@@ -35,13 +35,17 @@ export default async function YearlyPage() {
         />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Full width on phones, 2-up once there's real tablet width (a pair
+          of quarters side by side is comfortable well before a laptop-wide
+          screen), 4-up only once there's genuinely enough room for all of
+          them at once. */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {QUARTERS.map((q) => {
           const items = byQuarter(q);
           const done = items.filter((t: any) => t.status === "done").length;
           return (
-            <div key={q} className="border border-line rounded-lg p-3 bg-surface min-h-[180px]">
-              <div className="text-xs font-semibold mb-2">
+            <div key={q} className="border border-line rounded-lg corner-fix p-4 bg-surface">
+              <div className="text-sm font-semibold mb-3">
                 {q.split("-")[0]}
                 {items.length > 0 && (
                   <span className="text-ink/40 font-normal">
@@ -50,10 +54,16 @@ export default async function YearlyPage() {
                   </span>
                 )}
               </div>
-              <QuickAddTask horizon="yearly" quarter={q} placeholder="+ add goal" />
-              {items.map((t: any) => (
-                <TaskRow key={t.id} task={t as Task} />
-              ))}
+              <QuickAddTask horizon="yearly" quarter={q} placeholder="Add a goal…" />
+              {items.length === 0 ? (
+                <p className="text-xs text-ink/30 mt-2">No goals yet for this quarter.</p>
+              ) : (
+                <div className="mt-1">
+                  {items.map((t: any) => (
+                    <TaskRow key={t.id} task={t as Task} />
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}

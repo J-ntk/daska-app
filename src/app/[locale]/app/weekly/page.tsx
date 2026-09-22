@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import WeekDayColumn from "@/components/WeekDayColumn";
-import { startOfWeek, addDays, format } from "date-fns";
+import { startOfWeek, addDays, format, isSameDay } from "date-fns";
 import type { Task } from "@/lib/types";
 
 export default async function WeeklyPage() {
@@ -21,6 +21,7 @@ export default async function WeeklyPage() {
   const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
   const rangeStart = format(days[0], "yyyy-MM-dd");
   const rangeEnd = format(days[6], "yyyy-MM-dd");
+  const today = new Date();
 
   const { data: tasks } = await supabase
     .from("tasks")
@@ -42,15 +43,27 @@ export default async function WeeklyPage() {
         </h1>
       </div>
 
-      <p className="text-xs text-ink/40 mb-3">Drag a task onto another day to reschedule it.</p>
+      <p className="text-xs text-ink/40 mb-3 lg:hidden">Swipe to see other days.</p>
+      <p className="text-xs text-ink/40 mb-3 hidden lg:block">
+        Drag a task onto another day to reschedule it.
+      </p>
 
-      <div className="flex gap-2 overflow-x-auto md:grid md:grid-cols-7 md:overflow-visible -mx-5 px-5 md:mx-0 md:px-0">
+      {/* One day dominates the screen and snaps into place while swiping,
+          all the way up to a genuinely wide (1024px+) screen — 7 columns
+          don't have room to breathe on a tablet or a modest laptop window,
+          so the single-card view stays until there's real space for the
+          full week grid. */}
+      <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory lg:grid lg:grid-cols-7 lg:overflow-visible -mx-5 px-5 lg:mx-0 lg:px-0 pb-2">
         {days.map((day) => (
-          <div key={day.toISOString()} className="min-w-[180px] md:min-w-0">
+          <div
+            key={day.toISOString()}
+            className="w-[86vw] max-w-sm shrink-0 snap-center lg:w-auto lg:max-w-none lg:shrink"
+          >
             <WeekDayColumn
               dateLabel={format(day, "EEE d")}
               dateValue={format(day, "yyyy-MM-dd")}
               tasks={byDay(day) as Task[]}
+              isToday={isSameDay(day, today)}
             />
           </div>
         ))}
