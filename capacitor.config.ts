@@ -14,16 +14,18 @@ const config: CapacitorConfig = {
       'accounts.google.com',
     ],
   },
+  android: {
+    // Known Capacitor bug on Android (still open, see
+    // ionic-team/capacitor#7269, #7454, #8429): window.Capacitor stays
+    // undefined on a remote page loaded via server.url, so no plugin
+    // (including push notifications) can be detected or used. Setting
+    // any non-empty appendUserAgent is a confirmed community workaround
+    // that gets the bridge injected correctly.
+    appendUserAgent: 'DaskaApp',
+  },
   plugins: {
     SystemBars: {
       style: 'LIGHT',
-      // This is likely the real missing piece: Capacitor's SystemBars
-      // plugin auto-pads the WebView away from the system bars by
-      // default, which is why no native theme color could ever make
-      // things blend — the WebView itself never actually reached the
-      // edge. Disabling this lets the page's own background draw all
-      // the way under the (now transparent) bars, same as a native
-      // Expo/RN app would.
       insetsHandling: 'disable',
     },
   },
