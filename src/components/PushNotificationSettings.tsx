@@ -15,11 +15,24 @@ export default function PushNotificationSettings() {
   const [status, setStatus] = useState<Status>("checking");
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [diag, setDiag] = useState<string | null>(null);
 
-  // On mount: figure out where things currently stand, without
-  // prompting for anything yet.
   useEffect(() => {
     const capacitor = (window as any).Capacitor;
+
+    // Diagnostic only — shown when we can't detect the native app, so we
+    // have real evidence instead of guessing why.
+    setDiag(
+      `typeof window.Capacitor: ${typeof capacitor}` +
+        (capacitor
+          ? `, keys: ${JSON.stringify(Object.keys(capacitor))}, isNativePlatform: ${typeof capacitor.isNativePlatform}` +
+            (typeof capacitor.isNativePlatform === "function"
+              ? ` → ${capacitor.isNativePlatform()}`
+              : "") +
+            (typeof capacitor.getPlatform === "function" ? `, getPlatform: ${capacitor.getPlatform()}` : "")
+          : "")
+    );
+
     if (!capacitor?.isNativePlatform?.()) {
       setStatus("unsupported");
       return;
@@ -101,6 +114,9 @@ export default function PushNotificationSettings() {
             "Blocked in your phone's system settings. Enable notifications for Daska there, then reopen the app."}
         </div>
         {error && <div className="text-xs text-red-400 mt-1">{error}</div>}
+        {status === "unsupported" && diag && (
+          <div className="text-[10px] text-ink/30 mt-1 break-all">{diag}</div>
+        )}
       </div>
 
       {status === "off" && (
