@@ -1,56 +1,66 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { registerPushToken } from "@/lib/actions/push";
 
-// Registers this device for push notifications. Renders nothing — mount
-// it once near the root of the logged-in app (e.g. inside AppShell).
-// It's a no-op outside the native Android app: window.Capacitor only
-// exists there, so this silently does nothing in a normal browser tab.
+// Registers this device for push notifications. Mount once near the root
+// of the logged-in app. It's a no-op outside the native Android app.
+//
+// TEMPORARY: also renders a small on-screen debug panel showing what
+// happened, so this can be checked by just looking at the phone instead
+// of needing a working chrome://inspect connection. Remove the visible
+// <pre> block (search "DEBUG PANEL" below) once push notifications are
+// confirmed working end to end.
 export default function PushRegistration() {
+  const [log, setLog] = useState<string[]>([]);
+  const addLog = (line: string) => setLog((prev) => [...prev, line]);
+
   useEffect(() => {
     const capacitor = (window as any).Capacitor;
     if (!capacitor?.isNativePlatform?.()) {
-      console.log("[push] not running in the native app — skipping registration");
+      addLog("not running in the native app — skipping");
       return;
     }
+    addLog("running natively, starting setup…");
 
     let cancelled = false;
 
     (async () => {
       try {
         const { PushNotifications } = await import("@capacitor/push-notifications");
+        addLog("plugin module loaded");
 
         const perm = await PushNotifications.checkPermissions();
-        console.log("[push] current permission state:", perm.receive);
+        addLog(`permission state: ${perm.receive}`);
 
         let granted = perm.receive === "granted";
         if (!granted && perm.receive !== "denied") {
+          addLog("requesting permission…");
           const req = await PushNotifications.requestPermissions();
-          console.log("[push] permission request result:", req.receive);
+          addLog(`permission request result: ${req.receive}`);
           granted = req.receive === "granted";
         }
 
         if (!granted) {
-          console.log("[push] permission not granted — stopping");
+          addLog("permission not granted — stopping");
           return;
         }
         if (cancelled) return;
 
         await PushNotifications.register();
-        console.log("[push] register() called, waiting for token…");
+        addLog("register() called, waiting for token…");
 
         PushNotifications.addListener("registration", async (token) => {
-          console.log("[push] got device token, saving it");
+          addLog(`got token (${token.value.slice(0, 12)}…), saving`);
           const result = await registerPushToken(token.value, "android");
-          console.log("[push] registerPushToken result:", result);
+          addLog(`save result: ${JSON.stringify(result)}`);
         });
 
         PushNotifications.addListener("registrationError", (err) => {
-          console.error("[push] registration error", err);
+          addLog(`registration error: ${JSON.stringify(err)}`);
         });
-      } catch (err) {
-        console.error("[push] setup threw an error", err);
+      } catch (err: any) {
+        addLog(`threw: ${err?.message ?? String(err)}`);
       }
     })();
 
@@ -59,5 +69,28 @@ export default function PushRegistration() {
     };
   }, []);
 
-  return null;
+  return (
+    // ---- DEBUG PANEL: delete this block once push is confirmed working ----
+    <pre
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999,
+        maxHeight: "40vh",
+        overflowY: "auto",
+        margin: 0,
+        padding: "8px",
+        fontSize: "10px",
+        lineHeight: 1.4,
+        background: "rgba(0,0,0,0.85)",
+        color: "#6f6",
+        whiteSpace: "pre-wrap",
+      }}
+    >
+      {"[push debug]\n" + (log.length ? log.join("\n") : "(no log lines yet)")}
+    </pre>
+    // ---- end debug panel ----
+  );
 }
